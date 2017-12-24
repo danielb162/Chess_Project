@@ -1,23 +1,23 @@
 #include "chess.h"
 
 
-// TO DO: Change current implementation so that it runs with a struct for a tile, with two variables: id and color
-
 // TO DO: Change this so it prints out the colors of the board appropriately with DGREY for black pieces and WHITE for white pieces
-int printBoard(){
+/*int printBoard(){
     // Top padding:
-    printf("--------------------------\n");
+    printf("----------------\n");
     for(char col = 'A'; col <= 'H'; col++){ // Col counter, i.e. A - H
         for(char row = '2'; row <= '7'; row++){ // Row counter, i.e. 1 - 8
-            if (col == 'A') printf("|%c%c|", col, row);
-            else if (col == 'H') printf("%c%c|\n", col, row);
-            else printf("%c%c|", col, row);
+            char temp[2] = {col, row};
+            if (col == 'A') printf("|%c|", col, row);
+            else if (col == 'H') printf("%c|\n", col, row);
+            else printf("%c|", col, row);
         }
     }
     // Bottom padding:
-    printf("--------------------------\n");
+    printf("----------------\n");
     return 0;
 }
+*/
 
 /* Bash color codes (https://stackoverflow.com/questions/5947742/how-to-change-the-output-color-of-echo-in-linux)
 
@@ -41,9 +41,12 @@ And then use them like this in your script ('\033' is the escape character for '
 int main(){
     // Uses genCells.c to create a clean board state
     #include "clean_board"
-    // Sanity check for clean_board: printf("%c%c\n%c%c\n%c%c\n", *A8, *(A8+1), *D7, *(D7+1), *B4, *(B4+1));
+ 
+    /* Sanity check for clean_board:
+    printf("A8's id is: \033[1;37m%c\033[0m\nD7's id is: \033[1;30m%c\033[0m\n", A8.id, D7.id);
+    printf("A1's id is %c, it's color is %c\n", row1[0].id, row1[0].color);*/
 
-    printBoard();
+    //printBoard();
 
 
 

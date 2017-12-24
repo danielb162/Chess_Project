@@ -7,3 +7,7 @@
     #include <sys/wait.h>
 #endif
 
+typedef struct CELL {
+    char id;
+    char color;
+} Cell;
