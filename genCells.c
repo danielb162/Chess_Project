@@ -2,11 +2,11 @@
 
 int main(){
     FILE *cGen = fopen("clean_board", "wt");
-    if (cGen == NULL) exit (1);
+    if (cGen == NULL) exit(1);
 
     // Initialize the 64 empty Cell structs to be used later:
-    for(char col = 'A'; col <= 'H'; col++){
-        for(char row = '1'; row <= '8'; row++){
+    for (char col = 'A'; col <= 'H'; col++) {
+        for (char row = '1'; row <= '8'; row++) {
             fprintf(cGen, "Cell %c%c;\n", col, row);
         }
     }
@@ -14,8 +14,8 @@ int main(){
     fprintf(cGen, "\n");
 
     // Specify the colors of the 'active' tiles; fully initialize all pawns
-    for(char col = 'A'; col <= 'H'; col++){
-        for(char row = '1'; row <= '8'; row++){
+    for (char col = 'A'; col <= 'H'; col++) {
+        for (char row = '1'; row <= '8'; row++) {
             if (row == '1') {
                 fprintf(cGen, "%c%c.color = 'W';\n", col, row);
             }
