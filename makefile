@@ -1,10 +1,8 @@
-all: genCells.c chess.h chess.c
-	gcc -pedantic -Wall -std=c99 -Wno-unused-variable -o genC genCells.c;
-	gcc -pedantic -Wall -std=c99 -Wno-unused-variable chess.c
+.PHONY: all
+all: chess.c chess.h
+	gcc -pedantic -Wall -std=c99 -Wno-unused-variable -o chess $<
 
-gen:
-	genC
-
+.PHONY: backup
 backup:
 	rm -f ./backup/*;
 	cp ./* ./backup
