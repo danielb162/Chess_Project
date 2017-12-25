@@ -7,8 +7,16 @@ static const char* YLW = "\033[1;33m";
 static const char* WHT = "\033[1;37m";
 static const char* ORA = "\033[0;33m";
 static const char* LGN = "\033[1;32m";
+static const char* RED = "\033[0;31m";
+static const char* BLU = "\033[0;34m";
+static const char* BBG = "\033[40m";
+static const char* WBG = "\033[107m";
+static const char* DBG = "\033[49m";
+//static const char* EDGE = "\033[1;30m|"; // Edge between cells
 
-
+// Maybe use char constants for black and white piece char instead
+static const char B = 'B';
+static const char W = 'W';
 
 // [Row][Column], i.e. [0][0] -> A1 & [4][3] -> D5
 Cell board[8][8];
@@ -17,18 +25,18 @@ Cell board[8][8];
 void initializeBoard() {
     for (int r = 0; r <= 7; r++) {
         for (int c = 0; c <= 7; c++) {
-            if(r == 0) {
+            if (r == 0) {
                 board[r][c].color = 'W';
             }
-            else if(r == 1) {
+            else if (r == 1) {
                 board[r][c].id = 'P';
                 board[r][c].color = 'W';
             }
-            else if(r == 6) {
+            else if (r == 6) {
                 board[r][c].id = 'P';
                 board[r][c].color = 'B';
             }
-            else if(r == 7) {
+            else if (r == 7) {
                 board[r][c].color = 'B';
             }
             else {
@@ -62,19 +70,18 @@ void initializeBoard() {
 //  Recall [0][0] -> A1 & [4][3] -> D5
 void printBoard() {
     // Top padding:
-    printf("%s_________________\n", WHT);
+    printf("%s_________________\n", DGR);
     for (int row = 7; row >= 0; row--) { // Row counter, i.e. 0 - 7 -> A - H
         for (int col = 0; col <= 7; col++) {
-            if (board[row][col].color == 'B')
-                printf("%s|%s%c", WHT, YLW, board[row][col].id);
-            else if (board[row][col].color == 'W')
-                printf("%s|%s%c", WHT, LGN, board[row][col].id);
-            else printf("%s| ", WHT);
+            if ((row+col)%2 == 0)
+                printf("%s%s|%s%s%c", DBG, DGR, board[row][col].color=='B'?RED:BLU, BBG, board[row][col].id);
+            else
+                printf("%s%s|%s%s%c", DBG, DGR, board[row][col].color=='W'?BLU:RED, WBG, board[row][col].id);
         }
-        printf("%s|\n", WHT);
+        printf("%s%s|\n", DBG, DGR);
     }
     // Bottom padding:
-    printf("%s¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯%s\n", YLW, LGR);
+    printf("%s%s¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯%s\n", DBG, DGR, "\033[39m");
 }
 
 
