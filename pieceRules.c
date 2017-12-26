@@ -67,6 +67,49 @@ int movePawn(int x1, int y1, int x2, int y2) {
     return 0;
 }
 
+int moveBishop(int x1, int y1, int x2, int y2) {
+    if (x1 == x2 || y1 == y2) return -1;
+    else if ( x2 > x1 ) {
+        // Q1: x2 > x1 && y2 > y1
+        if ( y2 > y1 ) {
+            if ( x2 == x1 + (y2 - y1) ) {
+                if ( board[x2][y2].id == ' ' || canCapture(x1, y1, x2, y2) == TRUE ) moveSuccess(x1, y1, x2, y2);
+                else return -1;
+            }
+            else return -1;
+        }
+        // Q2: x2 > x1 && y1 > y2
+        else {
+            if ( x2 == x1 + (y1 - y2) ) {
+                if ( board[x2][y2].id == ' ' || canCapture(x1, y1, x2, y2) == TRUE ) moveSuccess(x1, y1, x2, y2);
+                else return -1;
+            }
+            else return -1;
+        }
+    }
+    else {
+        // Q3: x1 > x2 && y2 > y1
+        if ( y2 > y1 ) {
+            if ( x1 == x2 + (y2 - y1) ) {
+                if ( board[x2][y2].id == ' ' || canCapture(x1, y1, x2, y2) == TRUE ) moveSuccess(x1, y1, x2, y2);
+                else return -1;
+            }
+            else return -1;
+        }
+        // Q4: x1 > x2 && y1 > y2
+        else {
+            if ( x1 == x2 + (y1 - y2) ) {
+                if ( board[x2][y2].id == ' ' || canCapture(x1, y1, x2, y2) == TRUE ) moveSuccess(x1, y1, x2, y2);
+                else return -1;
+            }
+            else return -1;
+        }
+    }
+
+    // No errors were found while the move was processed
+    return 0;
+}
+
 
 // TO DO: add the rest of the pieces' move functions
 
@@ -75,6 +118,7 @@ int movePawn(int x1, int y1, int x2, int y2) {
 int movePiece(int x1, int y1, int x2, int y2) {
     // Check if dest. is invalid (due to the board's dimensions):
     if (y2 >= 8 || x2 >= 8 || y2 < 0 || x2 < 0) return -1;
+    else if ( x1 == x2 && y1 == y2 ) return -1;
     
     // UPDATE feedback from calling movePawn()
     if( board[x1][y1].id == 'P') {
