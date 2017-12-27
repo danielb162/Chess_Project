@@ -88,9 +88,17 @@ void printBoard() {
         printf("%s|\n", WHT);
     }
     // Bottom padding:
-    printf("%s¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯%s\n", YLW, LGR);
+    printf("%s¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯%s\n\n", YLW, LGR);
 }
 
+// Call-by-reference function to assign values to the int arrays appropriately
+void parseInput(char * pre, char * src, char * dst){
+    *src = *pre - 'A'; // Will transform the char into a 0 - 7 int
+    *( src + 1 ) = *( pre + 1 ) - 1; // Ditto
+
+    *dst = *( pre + 3 ) - 'A';
+    *( dst + 1 ) = *( pre + 4 ) - 1;
+}
 
 
 int main() {
@@ -106,6 +114,40 @@ int main() {
 
     // Printing the current board state:
     printBoard();
+
+    // Integer to store the menu of options
+    int choice = -1;
+
+    // Format for user input string is: "A1 A5"
+    char arr[5]; // Info about the user's request
+    int src[2]; // Info about the piece's current location
+    int dest[2]; // Info about the piece's desired location
+
+    while (true) {
+        printf("Please select one of the following options:\n");
+        printf("\t1. Print the board\n");
+        printf("\t2. Make a move\n");
+        printf("\t3. Concede\n");
+        switch( scanf("%d", choice) ){
+            case 1 :
+                printBoard();
+                break;
+
+            case 2 :
+                printf("Please enter a move & follow this format 'A5 B8':\n");
+                scanf("%s", arr);
+                parseInput(arr, src, dest);
+                movePiece(src[1], src[0], dest[1], dest[0]);
+                printf("\n"); 
+                break;
+
+            case 3 :
+                printf("Game over! Board state:\n");
+                printBoard();
+                printf("\n");
+                break;
+        }
+    }
 
     // No errors encountered
     return 0;

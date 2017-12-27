@@ -70,7 +70,7 @@ int movePawn(int x1, int y1, int x2, int y2) {
         if ( canCapture(x1, y1, x2, y2) ) {
             moveSuccess(x1, y1, x2, y2);
         }
-        // else return -1; Redundant?
+        else return -1;
     }
     else return -1;
 
@@ -81,11 +81,12 @@ int movePawn(int x1, int y1, int x2, int y2) {
     return 0;
 }
 
-// Could use some refactoring for this if/else maze
+/*  Bishops can move diagonally but, mathematically, their four directions have unique
+    properties for correctness. These four direction are marked Q1-Q4 below: */
 int moveBishop(int x1, int y1, int x2, int y2) {
     if (x1 == x2 || y1 == y2) return -1;
     else if ( x2 > x1 ) {
-        // Q1: x2 > x1 && y2 > y1
+        // Q1: ( x2 > x1 ) && ( y2 > y1 )
         if ( y2 > y1 ) {
             if ( x2 == x1 + (y2 - y1) ) {
                 if ( board[x2][y2].id == ' ' ||
@@ -94,7 +95,7 @@ int moveBishop(int x1, int y1, int x2, int y2) {
             }
             else return -1;
         }
-        // Q2: x2 > x1 && y1 > y2
+        // Q2: ( x2 > x1 ) && ( y1 > y2 )
         else {
             if ( x2 == x1 + (y1 - y2) ) {
                 if ( board[x2][y2].id == ' ' ||
@@ -105,7 +106,7 @@ int moveBishop(int x1, int y1, int x2, int y2) {
         }
     }
     else {
-        // Q3: x1 > x2 && y2 > y1
+        // Q3: ( x1 > x2 ) && ( y2 > y1 )
         if ( y2 > y1 ) {
             if ( x1 == x2 + (y2 - y1) ) {
                 if ( board[x2][y2].id == ' ' ||
@@ -114,7 +115,7 @@ int moveBishop(int x1, int y1, int x2, int y2) {
             }
             else return -1;
         }
-        // Q4: x1 > x2 && y1 > y2
+        // Q4: ( x1 > x2 ) && ( y1 > y2 )
         else {
             if ( x1 == x2 + (y1 - y2) ) {
                 if ( board[x2][y2].id == ' ' ||
@@ -130,55 +131,54 @@ int moveBishop(int x1, int y1, int x2, int y2) {
 }
 
 int moveRook(int x1, int y1, int x2, int y2) {
-    // One of these must be the same so:
+    // Either x1 == x2 or y1 == y2 when a rook moves thus:
     if (x1 != x2 && y1 != y2 ) return -1;
 
+    // Rook is moving vertically
     if ( x1 == x2 ) {
         if ( board[x2][y2].id == ' ' ||
              canCapture(x1, y1, x2, y2) ) moveSuccess(x1, y1, x2, y2);
         else return -1;
     }
-    else if ( y1 == y2 ) {
+    // Rook is moving horizontally
+    else {
         if ( board[x2][y2].id == ' ' ||
              canCapture(x1, y1, x2, y2) ) moveSuccess(x1, y1, x2, y2);
         else return -1;
     }
-    else return -1;
 
     // No errors were found while the move was processed
     return 0;
 }
 
+/*  Queens move as either Bishops or Rooks and since both those pieces have
+    distinct requirements for their moves to be valid, and due to the nature
+    of moveSuccess, we can simply call the requisite function once we
+    determine how the Queen is going to be moved. */
 int moveQueen(int x1, int y1, int x2, int y2) {
     if ( x1 == x2 || y1 == y2 ) return moveRook(x1, y1, x2, y2);
     else return moveBishop(x1, y1, x2, y2); 
 }
 
-// Maybe replace below with a check for Euclidian distance using the distance functiong ?
+// Kings will move like Queens (i.e. like Bishops OR Rooks, but only 1 tile at a time. 
 int moveKing(x1, y1, x2, y2){
-    // If the king is moving (vertically) as a rook would (but only by one tile):
-    if ( x1 == x2 && ( ( y1 == y2 - 1 ) || ( y1 == y2 + 1 ) ) ) {
-        return moveRook(x1, y1, x2, y2);
-    }
-    // Ditto as above but horizontally (split for readability):
-    else if ( y1 == y2 && ( ( x1 == x2 - 1 ) || ( x1 == x2 + 1 ) ) ) {
-        return moveRook(x1, y1, x2, y2);
-    }
-    // King is moving like a bishop (but only by one tile):
-    else if ( x1 == x2 + 1 || x1 == x2 - 1 ) {
-        if ( y1 == y2 + 1 || y1 == y2 - 1 ) {
-            return moveBishop(x1, y1, x2, y2);
-        }
+    int temp = distance(x1, y1, x2, y2);
+    /* If the King moves as a Rook then the
+       distance is simple: it'll be 1. However if it movs as a Bishop
+       then the distance will be sqrt(2). Thus: */
+    if ( temp == sqrt(2) || temp == 1 ) {
+        if ( board[x2][y2].id == ' ' ||
+             canCapture(x1, y1, x2, y2) ) moveSuccess(x1, y1, x2, y2);
         else return -1;
     }
     else return -1;
 }
 
 int moveKnight(int x1, int y1, int x2, int y2) {
-    int flag = distance(x1, y1, x2, y2);
+    int temp = distance(x1, y1, x2, y2);
     // Knights will always move in an 'L-shape' which means that the distance should be 5^0.5
     // Careful with floating point precision (it *should* be safe here)
-    if ( flag == sqrt(5) ) {
+    if ( temp == sqrt(5) ) {
         if ( board[x2][y2].id == ' ' ||
              canCapture(x1, y1, x2, y2) ) moveSuccess(x1, y1, x2, y2);
         else return -1;
