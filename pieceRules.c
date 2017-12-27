@@ -37,7 +37,7 @@ void blank(int x, int y) {
     will replace the dest. cell with info @ source cell and 'wipe' source cell */
 void moveSuccess(int x1, int y1, int x2, int y2) {
     board[x2][y2] = board[x1][y1];
-    blank(x1, y1); // Set board[x1][y2] to a 'blank cell'
+    blank(x1, y1); // Set board[x1][y1] to a 'blank cell'
 }
 
 // Function to check if (x1, y1) can capture a piece at (x2, y2)
@@ -45,13 +45,6 @@ int canCapture(int x1, int y1, int x2, int y2) {
     if ( ( board[x1][y1].color == B && board[x2][y2].color == W ) ||
          ( board[x1][y1].color == W && board[x2][y2].color == B ) ) return true;
     else return false;
-}
-
-/* Function to be called whenever a piece moves successfully to it's destination;
-   will replace the dest. cell with info @ source cell and 'wipe' source cell */
-void moveSuccess(int x1, int y1, int x2, int y2) {
-    board[x2][y2] = board[x1][y1];
-    blank(x1, y1); // Set board[x1][y1] to a 'blank cell'
 }
 
 // Function to return the 2-dimensional Euclidian distance
