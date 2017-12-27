@@ -6,7 +6,7 @@
 static const char B = 'B';
 static const char W = 'W';
 Cell board[8][8];
-int main() {
+int main(int argc, char* argv[argc+1]) {
     return 0;
 }
 
@@ -42,16 +42,17 @@ void moveSuccess(int x1, int y1, int x2, int y2) {
 
 // Function to check if (x1, y1) can capture a piece at (x2, y2)
 int canCapture(int x1, int y1, int x2, int y2) { 
-    if ( ( board[x1][y1].color == B && board[x2][y2].color == W ) ||
-         ( board[x1][y1].color == W && board[x2][y2].color == B ) ) return true;
-    else return false;
+    return ( board[x1][y1].color == B && board[x2][y2].color == W ) ||
+           ( board[x1][y1].color == W && board[x2][y2].color == B );
 }
 
 // Function to return the 2-dimensional Euclidian distance
 int distance(int x1, int y1, int x2, int y2) {
-    int xSq = pow(( x1 - x2 ), 2);
-    int ySq = pow(( y1 - y2 ), 2);
-    return sqrt( xSq + ySq);
+    int xDiff = ( x1 - x2 );
+    int yDiff = ( y1 - y2 );
+    int xSq = xDiff * xDiff;
+    int ySq = yDiff * yDiff;
+    return sqrt( xSq + ySq );
 }
 
 /* SUGGESTION: Return bool instead of int? */
@@ -80,7 +81,7 @@ int movePawn(int x1, int y1, int x2, int y2) {
     return 0;
 }
 
-// Could seriously use some refactoring for this if/else mess
+// Could use some refactoring for this if/else maze
 int moveBishop(int x1, int y1, int x2, int y2) {
     if (x1 == x2 || y1 == y2) return -1;
     else if ( x2 > x1 ) {
@@ -88,19 +89,19 @@ int moveBishop(int x1, int y1, int x2, int y2) {
         if ( y2 > y1 ) {
             if ( x2 == x1 + (y2 - y1) ) {
                 if ( board[x2][y2].id == ' ' ||
-                     canCapture(x1, y1, x2, y2) == true ) moveSuccess(x1, y1, x2, y2);
-                // else return -1; Redundant?
+                     canCapture(x1, y1, x2, y2) ) moveSuccess(x1, y1, x2, y2);
+                else return -1;
             }
-            // else return -1; Redundant?
+            else return -1;
         }
         // Q2: x2 > x1 && y1 > y2
         else {
             if ( x2 == x1 + (y1 - y2) ) {
                 if ( board[x2][y2].id == ' ' ||
                      canCapture(x1, y1, x2, y2) ) moveSuccess(x1, y1, x2, y2);
-                // else return -1; Redundant?
+                else return -1;
             }
-            // else return -1; Redundant?
+            else return -1;
         }
     }
     else {
@@ -108,26 +109,24 @@ int moveBishop(int x1, int y1, int x2, int y2) {
         if ( y2 > y1 ) {
             if ( x1 == x2 + (y2 - y1) ) {
                 if ( board[x2][y2].id == ' ' ||
-                     canCapture(x1, y1, x2, y2) == true ) moveSuccess(x1, y1, x2, y2);
-                // else return -1; Redundant?
+                     canCapture(x1, y1, x2, y2) ) moveSuccess(x1, y1, x2, y2);
+                else return -1;
             }
-            // else return -1; Redundant?
+            else return -1;
         }
         // Q4: x1 > x2 && y1 > y2
         else {
             if ( x1 == x2 + (y1 - y2) ) {
                 if ( board[x2][y2].id == ' ' ||
-                     canCapture(x1, y1, x2, y2) == true ) moveSuccess(x1, y1, x2, y2);
-                // else return -1; Redundant?
+                     canCapture(x1, y1, x2, y2) ) moveSuccess(x1, y1, x2, y2);
+                else return -1;
             }
-            // else return -1; Redundant?
+            else return -1;
         }
     }
 
-    return -1; // See comments below
-
     // No errors were found while the move was processed
-    // return 0; ??? Would this even ever be reached with if/else and return -1 everywhere?
+    return 0;
 }
 
 int moveRook(int x1, int y1, int x2, int y2) {
@@ -135,11 +134,13 @@ int moveRook(int x1, int y1, int x2, int y2) {
     if (x1 != x2 && y1 != y2 ) return -1;
 
     if ( x1 == x2 ) {
-        if ( board[x2][y2].id == ' ' || canCapture(x1, y1, x2, y2) == TRUE ) moveSuccess(x1, y1, x2, y2);
+        if ( board[x2][y2].id == ' ' ||
+             canCapture(x1, y1, x2, y2) ) moveSuccess(x1, y1, x2, y2);
         else return -1;
     }
     else if ( y1 == y2 ) {
-        if ( board[x2][y2].id == ' ' || canCapture(x1, y1, x2, y2) == TRUE ) moveSuccess(x1, y1, x2, y2);
+        if ( board[x2][y2].id == ' ' ||
+             canCapture(x1, y1, x2, y2) ) moveSuccess(x1, y1, x2, y2);
         else return -1;
     }
     else return -1;
@@ -176,21 +177,23 @@ int moveKing(x1, y1, x2, y2){
 int moveKnight(int x1, int y1, int x2, int y2) {
     int flag = distance(x1, y1, x2, y2);
     // Knights will always move in an 'L-shape' which means that the distance should be 5^0.5
+    // Careful with floating point precision (it *should* be safe here)
     if ( flag == sqrt(5) ) {
-        if ( board[x2][y2].id == ' ' || canCapture(x1, y1, x2, y2) == TRUE ) moveSuccess(x1, y1, x2, y2);
+        if ( board[x2][y2].id == ' ' ||
+             canCapture(x1, y1, x2, y2) ) moveSuccess(x1, y1, x2, y2);
         else return -1;
     }
     else return -1;
 }
 
-// Format: (x1, y1) is the current position while (x2, y2) is the requested destination; nb: x <--> columns/letters, y <--> rows/numbers
+/* Format: (x1, y1) is the current position while (x2, y2) is the requested destination;
+ * nb: x <--> columns/letters, y <--> rows/numbers */
 int movePiece(int x1, int y1, int x2, int y2) {
     // Check if dest. is invalid (due to the board's dimensions):
-    if ( (y2 >= 8 || x2 >= 8 || y2 < 0 || x2 < 0) ||
+    if ( ( y2 >= 8 || x2 >= 8 || y2 < 0 || x2 < 0 ) ||
          ( x1 == x2 && y1 == y2 ) ) return -1;
     
-    /* This part is why making movePawn return a bool is more elegant, but
-     * may disallow finegraining errors (there should be better ways anyway I think?) */
+    // Do not refactor redundancy as there may be work to do depending on success or fail
     // UPDATE feedback from calling all move functions
     if ( board[x1][y1].id == 'P') {
         // Success:
@@ -198,33 +201,33 @@ int movePiece(int x1, int y1, int x2, int y2) {
         // Failure:
         else return -1;
     }
-    else if( board[x1][y1].id == 'R') {
+    else if ( board[x1][y1].id == 'R') {
         // Success:
-        if( moveRook(x1, y1, x2, y2) == 0 ) return 0;
+        if ( moveRook(x1, y1, x2, y2) == 0 ) return 0;
         // Failure:
         else return -1;
     }
-    else if( board[x1][y1].id == 'B') {
+    else if ( board[x1][y1].id == 'B') {
         // Success:
-        if( moveBishop(x1, y1, x2, y2) == 0 ) return 0;
+        if ( moveBishop(x1, y1, x2, y2) == 0 ) return 0;
         // Failure:
         else return -1;
     }
-    else if( board[x1][y1].id == 'Q') {
+    else if ( board[x1][y1].id == 'Q') {
         // Success:
-        if( moveQueen(x1, y1, x2, y2) == 0 ) return 0;
+        if ( moveQueen(x1, y1, x2, y2) == 0 ) return 0;
         // Failure:
         else return -1;
     }
-    else if( board[x1][y1].id == 'K') {
+    else if ( board[x1][y1].id == 'K') {
         // Success:
-        if( moveKing(x1, y1, x2, y2) == 0 ) return 0;
+        if ( moveKing(x1, y1, x2, y2) == 0 ) return 0;
         // Failure:
         else return -1;
     }
-    else if( board[x1][y1].id == 'N') {
+    else if ( board[x1][y1].id == 'N') {
         // Success:
-        if( movePawn(x1, y1, x2, y2) == 0 ) return 0;
+        if ( movePawn(x1, y1, x2, y2) == 0 ) return 0;
         // Failure:
         else return -1;
     }
