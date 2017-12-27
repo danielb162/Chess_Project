@@ -10,4 +10,8 @@
         char color;
     } Cell;
 
+    void initializeBoard();
+    void printBoard();
+    void parseInput(char* pre, int* src, int* dst);
+    
 #endif

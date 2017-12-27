@@ -1,3 +1,5 @@
+#include <stdlib.h>
+#include <stdbool.h>
 #include "chess.h"
 
 // Escape codes for colors, in-terminal
@@ -92,7 +94,7 @@ void printBoard() {
 }
 
 // Call-by-reference function to assign values to the int arrays appropriately
-void parseInput(char * pre, char * src, char * dst){
+void parseInput(char* pre, int* src, int* dst) {
     *src = *pre - 'A'; // Will transform the char into a 0 - 7 int
     *( src + 1 ) = *( pre + 1 ) - 1; // Ditto
 
@@ -100,7 +102,7 @@ void parseInput(char * pre, char * src, char * dst){
     *( dst + 1 ) = *( pre + 4 ) - 1;
 }
 
-// Need to sort out later - TEMPORARARILY from pieceRules.c:
+// Need to sort out later - TEMPORARILY from pieceRules.c:
 
         // Function to turn given cell, board[x][y], to a 'blank' cell
         void blank(int x, int y) {
@@ -159,7 +161,7 @@ void parseInput(char * pre, char * src, char * dst){
         /*  Bishops can move diagonally but, mathematically, their four directions have unique
             properties for correctness. These four direction are marked Q1-Q4 below: */
         int moveBishop(int x1, int y1, int x2, int y2) {
-            if (x1 == x2 || y1 == y2) return -1;
+            if ( x1 == x2 || y1 == y2 ) return -1;
             else if ( x2 > x1 ) {
                 // Q1: ( x2 > x1 ) && ( y2 > y1 )
                 if ( y2 > y1 ) {
@@ -227,21 +229,21 @@ void parseInput(char * pre, char * src, char * dst){
         }
 
         /*  Queens move as either Bishops or Rooks and since both those pieces have
-            distinct requirements for their moves to be valid, and due to the nature
-            of moveSuccess, we can simply call the requisite function once we
-            determine how the Queen is going to be moved. */
+        *  distinct requirements for their moves to be valid, and due to the nature
+        *  of moveSuccess, we can simply call the requisite function once we
+        *  determine how the Queen is going to be moved. */
         int moveQueen(int x1, int y1, int x2, int y2) {
             if ( x1 == x2 || y1 == y2 ) return moveRook(x1, y1, x2, y2);
             else return moveBishop(x1, y1, x2, y2); 
         }
 
         // Kings will move like Queens (i.e. like Bishops OR Rooks, but only 1 tile at a time. 
-        int moveKing(x1, y1, x2, y2){
-            int temp = distance(x1, y1, x2, y2);
+        int moveKing(int x1, int y1, int x2, int y2) {
+            int move = distance(x1, y1, x2, y2);
             /* If the King moves as a Rook then the
             distance is simple: it'll be 1. However if it movs as a Bishop
             then the distance will be sqrt(2). Thus: */
-            if ( temp == sqrt(2) || temp == 1 ) {
+            if ( move == sqrt(2) || move == 1 ) {
                 if ( board[x2][y2].id == ' ' ||
                     canCapture(x1, y1, x2, y2) ) moveSuccess(x1, y1, x2, y2);
                 else return -1;
@@ -250,10 +252,10 @@ void parseInput(char * pre, char * src, char * dst){
         }
 
         int moveKnight(int x1, int y1, int x2, int y2) {
-            int temp = distance(x1, y1, x2, y2);
+            int move = distance(x1, y1, x2, y2);
             // Knights will always move in an 'L-shape' which means that the distance should be 5^0.5
             // Careful with floating point precision (it *should* be safe here)
-            if ( temp == sqrt(5) ) {
+            if ( move == sqrt(5) ) {
                 if ( board[x2][y2].id == ' ' ||
                     canCapture(x1, y1, x2, y2) ) moveSuccess(x1, y1, x2, y2);
                 else return -1;
@@ -311,7 +313,7 @@ void parseInput(char * pre, char * src, char * dst){
 
 // End of code from pieceRules.c
 
-int main() {
+int main(void) {
  
     /* Sanity check for clean_board:
     printf("A8's id is: \033[1;37m%c\033[0m\nD7's id is: \033[1;30m%c\033[0m\n", A8.id, D7.id);
@@ -329,7 +331,7 @@ int main() {
     int choice = -1;
 
     // Format for user input string is: "A1 A5"
-    char arr[5]; // Info about the user's request
+    char target[6]; // Info about the user's request
     int src[2]; // Info about the piece's current location
     int dest[2]; // Info about the piece's desired location
 
@@ -338,15 +340,16 @@ int main() {
         printf("\t1. Print the board\n");
         printf("\t2. Make a move\n");
         printf("\t3. Concede\n");
-        switch( scanf("%d", choice) ){
+        switch( scanf("%d", &choice) ) {
             case 1 :
                 printBoard();
                 break;
 
             case 2 :
                 printf("Please enter a move & follow this format 'A5 B8':\n");
-                scanf("%s", arr);
-                parseInput(arr, src, dest);
+                scanf("%5s", target);
+                target[5] = '\0';
+                parseInput(target, src, dest);
                 movePiece(src[1], src[0], dest[1], dest[0]);
                 printf("\n"); 
                 break;
@@ -360,5 +363,5 @@ int main() {
     }
 
     // No errors encountered
-    return 0;
+    return EXIT_SUCCESS;
 }
