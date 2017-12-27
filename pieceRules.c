@@ -1,5 +1,3 @@
-#include <stdlib.h>
-#include <stdbool.h>
 #include "chess.h"
 
 /* To check if code compiles we add this
@@ -162,7 +160,7 @@ int moveQueen(int x1, int y1, int x2, int y2) {
 }
 
 // Kings will move like Queens (i.e. like Bishops OR Rooks, but only 1 tile at a time. 
-int moveKing(x1, y1, x2, y2){
+int moveKing(int x1, int y1, int x2, int y2) {
     int move = distance(x1, y1, x2, y2);
     /* If the King moves as a Rook then the
        distance is simple: it'll be 1. However if it movs as a Bishop

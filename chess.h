@@ -2,6 +2,7 @@
     #define CHESS_HEAD
     #include <stdio.h>
     #include <stdlib.h>
+    #include <stdbool.h>
     #include <string.h> // For memset (?)
     #include <math.h> // For square root
 

@@ -1,5 +1,3 @@
-#include <stdlib.h>
-#include <stdbool.h>
 #include "chess.h"
 
 // Escape codes for colors, in-terminal
@@ -249,6 +247,8 @@ void parseInput(char* pre, int* src, int* dst) {
                 else return -1;
             }
             else return -1;
+
+            return 0;
         }
 
         int moveKnight(int x1, int y1, int x2, int y2) {
@@ -261,6 +261,8 @@ void parseInput(char* pre, int* src, int* dst) {
                 else return -1;
             }
             else return -1;
+
+            return 0;
         }
 
         /* Format: (x1, y1) is the current position while (x2, y2) is the requested destination;
