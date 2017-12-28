@@ -13,6 +13,6 @@
 
     void initializeBoard();
     void printBoard();
-    void parseInput(char* pre, int* src, int* dst);
+    //void parseInput(char* pre, int *x1, int *y1, int *x2, int *y2);
     
 #endif

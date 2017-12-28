@@ -92,33 +92,31 @@ void printBoard() {
 }
 
 // Call-by-reference function to assign values to the int arrays appropriately
-void parseInput(char* pre, int* src, int* dst) {
-    *src = *pre - 'A'; // Will transform the char into a 0 - 7 int
-    *( src + 1 ) = *( pre + 1 ) - 1; // Ditto
-
-    *dst = *( pre + 3 ) - 'A';
-    *( dst + 1 ) = *( pre + 4 ) - 1;
+void parseInput(char* pre, int *num1, int *num2) {
+    char temp = *pre;
+    //*num1 = atoi(temp); // Will transform the char into a 0 - 7 int
+    //*num2 = atoi(*( pre + 1 )) - 1; // Ditto
 }
 
 // Need to sort out later - TEMPORARILY from pieceRules.c:
 
         // Function to turn given cell, board[x][y], to a 'blank' cell
         void blank(int x, int y) {
-            board[x][y].id = ' ';
-            board[x][y].color = ' ';
+            board[y][x].id = ' ';
+            board[y][x].color = ' ';
         }
 
         /*  Function to be called whenever a piece moves successfully to it's destination;
             will replace the dest. cell with info @ source cell and 'wipe' source cell */
         void moveSuccess(int x1, int y1, int x2, int y2) {
-            board[x2][y2] = board[x1][y1];
+            board[y2][x2] = board[y1][x1];
             blank(x1, y1); // Set board[x1][y1] to a 'blank cell'
         }
 
         // Function to check if (x1, y1) can capture a piece at (x2, y2)
         int canCapture(int x1, int y1, int x2, int y2) { 
-            return ( board[x1][y1].color == B && board[x2][y2].color == W ) ||
-                ( board[x1][y1].color == W && board[x2][y2].color == B );
+            return ( board[y1][x1].color == B && board[y2][x2].color == W ) ||
+                ( board[y1][x1].color == W && board[y2][x2].color == B );
         }
 
         // Function to return the 2-dimensional Euclidian distance
@@ -134,10 +132,10 @@ void parseInput(char* pre, int* src, int* dst) {
         // Returns -1 if for ANY reason move is invalid
         int movePawn(int x1, int y1, int x2, int y2) {
             // Pawns can only ever move up/down one row so these act as general checks:
-            if ( ( board[x1][y1].color == W && y2 != (y1 + 1) ) ||
-                ( board[x1][y1].color == B && y2 != (y1 - 1) ) ) return -1;
+            if ( ( board[y1][x1].color == W && y2 != (y1 + 1) ) ||
+                ( board[y1][x1].color == B && y2 != (y1 - 1) ) ) return -1;
             // Without capture pawn can only move (progressively) within it's rank:
-            else if ( x1 == x2 && board[x2][y2].id == ' ') {
+            else if ( x1 == x2 && board[y2][x2].id == ' ') {
                 moveSuccess(x1,y1, x2, y2);
             }
             // Check if capture is possible and capture if so:
@@ -164,7 +162,7 @@ void parseInput(char* pre, int* src, int* dst) {
                 // Q1: ( x2 > x1 ) && ( y2 > y1 )
                 if ( y2 > y1 ) {
                     if ( x2 == x1 + (y2 - y1) ) {
-                        if ( board[x2][y2].id == ' ' ||
+                        if ( board[y2][x2].id == ' ' ||
                             canCapture(x1, y1, x2, y2) ) moveSuccess(x1, y1, x2, y2);
                         else return -1;
                     }
@@ -173,7 +171,7 @@ void parseInput(char* pre, int* src, int* dst) {
                 // Q2: ( x2 > x1 ) && ( y1 > y2 )
                 else {
                     if ( x2 == x1 + (y1 - y2) ) {
-                        if ( board[x2][y2].id == ' ' ||
+                        if ( board[y2][x2].id == ' ' ||
                             canCapture(x1, y1, x2, y2) ) moveSuccess(x1, y1, x2, y2);
                         else return -1;
                     }
@@ -184,7 +182,7 @@ void parseInput(char* pre, int* src, int* dst) {
                 // Q3: ( x1 > x2 ) && ( y2 > y1 )
                 if ( y2 > y1 ) {
                     if ( x1 == x2 + (y2 - y1) ) {
-                        if ( board[x2][y2].id == ' ' ||
+                        if ( board[y2][x2].id == ' ' ||
                             canCapture(x1, y1, x2, y2) ) moveSuccess(x1, y1, x2, y2);
                         else return -1;
                     }
@@ -193,7 +191,7 @@ void parseInput(char* pre, int* src, int* dst) {
                 // Q4: ( x1 > x2 ) && ( y1 > y2 )
                 else {
                     if ( x1 == x2 + (y1 - y2) ) {
-                        if ( board[x2][y2].id == ' ' ||
+                        if ( board[y2][x2].id == ' ' ||
                             canCapture(x1, y1, x2, y2) ) moveSuccess(x1, y1, x2, y2);
                         else return -1;
                     }
@@ -211,13 +209,13 @@ void parseInput(char* pre, int* src, int* dst) {
 
             // Rook is moving vertically
             if ( x1 == x2 ) {
-                if ( board[x2][y2].id == ' ' ||
+                if ( board[y2][x2].id == ' ' ||
                     canCapture(x1, y1, x2, y2) ) moveSuccess(x1, y1, x2, y2);
                 else return -1;
             }
             // Rook is moving horizontally
             else {
-                if ( board[x2][y2].id == ' ' ||
+                if ( board[y2][x2].id == ' ' ||
                     canCapture(x1, y1, x2, y2) ) moveSuccess(x1, y1, x2, y2);
                 else return -1;
             }
@@ -242,7 +240,7 @@ void parseInput(char* pre, int* src, int* dst) {
             distance is simple: it'll be 1. However if it movs as a Bishop
             then the distance will be sqrt(2). Thus: */
             if ( move == sqrt(2) || move == 1 ) {
-                if ( board[x2][y2].id == ' ' ||
+                if ( board[y2][x2].id == ' ' ||
                     canCapture(x1, y1, x2, y2) ) moveSuccess(x1, y1, x2, y2);
                 else return -1;
             }
@@ -256,7 +254,7 @@ void parseInput(char* pre, int* src, int* dst) {
             // Knights will always move in an 'L-shape' which means that the distance should be 5^0.5
             // Careful with floating point precision (it *should* be safe here)
             if ( move == sqrt(5) ) {
-                if ( board[x2][y2].id == ' ' ||
+                if ( board[y2][x2].id == ' ' ||
                     canCapture(x1, y1, x2, y2) ) moveSuccess(x1, y1, x2, y2);
                 else return -1;
             }
@@ -271,40 +269,44 @@ void parseInput(char* pre, int* src, int* dst) {
             // Check if dest. is invalid (due to the board's dimensions):
             if ( ( y2 >= 8 || x2 >= 8 || y2 < 0 || x2 < 0 ) ||
                 ( x1 == x2 && y1 == y2 ) ) return -1;
+            // Check if source is invalid:
+            else if ( board[y1][x1].id == ' ' ) {
+                printf("Thats an invalid move"); return -1;
+            }
             
             // Do not refactor redundancy as there may be work to do depending on success or fail
             // UPDATE feedback from calling all move functions
-            if ( board[x1][y1].id == 'P') {
+            if ( board[y1][x1].id == 'P') {
                 // Success:
                 if ( movePawn(x1, y1, x2, y2) == 0 ) return 0;
                 // Failure:
                 else return -1;
             }
-            else if ( board[x1][y1].id == 'R') {
+            else if ( board[y1][x1].id == 'R') {
                 // Success:
                 if ( moveRook(x1, y1, x2, y2) == 0 ) return 0;
                 // Failure:
                 else return -1;
             }
-            else if ( board[x1][y1].id == 'B') {
+            else if ( board[y1][x1].id == 'B') {
                 // Success:
                 if ( moveBishop(x1, y1, x2, y2) == 0 ) return 0;
                 // Failure:
                 else return -1;
             }
-            else if ( board[x1][y1].id == 'Q') {
+            else if ( board[y1][x1].id == 'Q') {
                 // Success:
                 if ( moveQueen(x1, y1, x2, y2) == 0 ) return 0;
                 // Failure:
                 else return -1;
             }
-            else if ( board[x1][y1].id == 'K') {
+            else if ( board[y1][x1].id == 'K') {
                 // Success:
                 if ( moveKing(x1, y1, x2, y2) == 0 ) return 0;
                 // Failure:
                 else return -1;
             }
-            else if ( board[x1][y1].id == 'N') {
+            else if ( board[y1][x1].id == 'N') {
                 // Success:
                 if ( movePawn(x1, y1, x2, y2) == 0 ) return 0;
                 // Failure:
@@ -326,33 +328,64 @@ int main(void) {
     // Setting up an empty board:
     initializeBoard();
 
-    // Printing the current board state:
-    printBoard();
-
     // Integer to store the menu of options
     int choice = -1;
 
-    // Format for user input string is: "A1 A5"
-    char target[6]; // Info about the user's request
-    int src[2]; // Info about the piece's current location
-    int dest[2]; // Info about the piece's desired location
+    // Int to escape while loop later
+    int flag = true;
 
-    while (true) {
+    // String containing the user's request; format for user input string is: "A1 A5"
+    char target[6]; 
+    /*  Note that x-coordinates are used in the second dimension, while
+     *  while y-coordinates are used in the first. I.e. D8 is board[7][3] */
+    int x1 = -1;
+    int y1 = -1;
+    int x2 = -1;
+    int y2 = -1;
+
+    /*
+    printf("Please enter a move & follow this format 'A5,B8':\n");
+    scanf("%5s", target);
+    target[5] = '\0';
+    x1 = *target - 'A'; // Normalizes a char 'A' to an int 0
+    y1 = *(target + 1) - 49; // Normalizes a char '1' to an int 0
+    x2 = *(target + 3) - 'A';
+    y2 = *(target + 4) - 49;
+    printf("#1 as numbers is: [%d][%d]\n", y1, x1);
+    printf("#2 as numbers is: [%d][%d]\n", y2, x2);
+    printf("Target is: '%s'\n", target);
+    printf("movePiece results in %d\n", movePiece(0, 0, 0, 5));
+    */
+
+    /* BUGS/CRASHES (1 - 3 have seemed to stop happening?):
+        1. A6 was attempted as a valid move by a rook as the first move
+        2. A6 was attempted as a valid move by a pawn as the fourth move
+        3. A6 was attempted as a valid move by a bishop as the second move
+    */
+
+    while ( flag ) {
         printf("Please select one of the following options:\n");
         printf("\t1. Print the board\n");
         printf("\t2. Make a move\n");
         printf("\t3. Concede\n");
-        switch( scanf("%d", &choice) ) {
+        scanf("%d", &choice);
+        printf("\n");
+        switch( choice ) {
             case 1 :
                 printBoard();
                 break;
 
             case 2 :
-                printf("Please enter a move & follow this format 'A5 B8':\n");
+                printf("Please enter a move & follow this format 'A5,B8':\n");
                 scanf("%5s", target);
                 target[5] = '\0';
-                parseInput(target, src, dest);
-                movePiece(src[1], src[0], dest[1], dest[0]);
+                x1 = *target - 'A'; // Normalizes a char 'A' to an int 0
+                y1 = *(target + 1) - 49; // Normalizes a char '1' to an int 0
+                x2 = *(target + 3) - 'A';
+                y2 = *(target + 4) - 49;
+                /*printf("#1 as numbers is: [%d][%d]\n", y1, x1);
+                printf("#2 as numbers is: [%d][%d]\n", y2, x2);*/
+                if ( movePiece(x1, y1, x2, y2) == -1 ) printf("There was a problem please try again!\n");
                 printf("\n"); 
                 break;
 
@@ -360,8 +393,10 @@ int main(void) {
                 printf("Game over! Board state:\n");
                 printBoard();
                 printf("\n");
+                flag = false;
                 break;
         }
+        printf("\n\n\n\n\n\n\n");
     }
 
     // No errors encountered
