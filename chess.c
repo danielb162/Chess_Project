@@ -385,9 +385,9 @@ int main(void) {
                 scanf("%5s", target);
                 target[5] = '\0';
                 x1 = *target - 'A'; // Normalizes a char 'A' to an int 0
-                y1 = *(target + 1) - '1'; // Normalizes a char '1' to an int 0
+                y1 = *(target + 1) - '0'; // Normalizes a char '1' to an int 0
                 x2 = *(target + 3) - 'A';
-                y2 = *(target + 4) - '1';
+                y2 = *(target + 4) - '0';
                 /*printf("#1 as numbers is: [%d][%d]\n", y1, x1);
                 printf("#2 as numbers is: [%d][%d]\n", y2, x2);*/
                 if ( movePiece(x1, y1, x2, y2) == -1 )
