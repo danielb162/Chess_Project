@@ -92,7 +92,7 @@ void printBoard() {
 }
 
 // Call-by-reference function to assign values to the int arrays appropriately
-void parseInput(char* pre, int *num1, int *num2) {
+void parseInput(char* pre, int* num1, int* num2) {
     char temp = *pre;
     //*num1 = atoi(temp); // Will transform the char into a 0 - 7 int
     //*num2 = atoi(*( pre + 1 )) - 1; // Ditto
@@ -271,7 +271,8 @@ void parseInput(char* pre, int *num1, int *num2) {
                 ( x1 == x2 && y1 == y2 ) ) return -1;
             // Check if source is invalid:
             else if ( board[y1][x1].id == ' ' ) {
-                printf("Thats an invalid move"); return -1;
+                printf("Thats an invalid move");
+                return -1;
             }
             
             // Do not refactor redundancy as there may be work to do depending on success or fail
@@ -332,12 +333,16 @@ int main(void) {
     int choice = -1;
 
     // Int to escape while loop later
-    int flag = true;
+    bool play = true;
 
-    // String containing the user's request; format for user input string is: "A1 A5"
+    // String containing the user's request; format for user input string is: "A1,A5"
     char target[6]; 
     /*  Note that x-coordinates are used in the second dimension, while
-     *  while y-coordinates are used in the first. I.e. D8 is board[7][3] */
+     *  while y-coordinates are used in the first. I.e. D8 is board[7][3]
+     *  Board looks like this:
+     *  { y0={ x0, ..., xn },
+     *    y1={ x0, ..., xn },
+     *    y2={ x0, ..., xn } } */
     int x1 = -1;
     int y1 = -1;
     int x2 = -1;
@@ -363,14 +368,14 @@ int main(void) {
         3. A6 was attempted as a valid move by a bishop as the second move
     */
 
-    while ( flag ) {
+    while ( play ) {
         printf("Please select one of the following options:\n");
         printf("\t1. Print the board\n");
         printf("\t2. Make a move\n");
         printf("\t3. Concede\n");
         scanf("%d", &choice);
         printf("\n");
-        switch( choice ) {
+        switch ( choice ) {
             case 1 :
                 printBoard();
                 break;
@@ -380,20 +385,20 @@ int main(void) {
                 scanf("%5s", target);
                 target[5] = '\0';
                 x1 = *target - 'A'; // Normalizes a char 'A' to an int 0
-                y1 = *(target + 1) - 49; // Normalizes a char '1' to an int 0
+                y1 = *(target + 1) - '1'; // Normalizes a char '1' to an int 0
                 x2 = *(target + 3) - 'A';
-                y2 = *(target + 4) - 49;
+                y2 = *(target + 4) - '1';
                 /*printf("#1 as numbers is: [%d][%d]\n", y1, x1);
                 printf("#2 as numbers is: [%d][%d]\n", y2, x2);*/
-                if ( movePiece(x1, y1, x2, y2) == -1 ) printf("There was a problem please try again!\n");
-                printf("\n"); 
+                if ( movePiece(x1, y1, x2, y2) == -1 )
+                    printf("There was a problem please try again!\n\n");
                 break;
 
             case 3 :
                 printf("Game over! Board state:\n");
                 printBoard();
                 printf("\n");
-                flag = false;
+                play = false;
                 break;
         }
         printf("\n\n\n\n\n\n\n");
