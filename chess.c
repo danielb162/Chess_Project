@@ -165,10 +165,10 @@ void parseInput(char* pre, int* num1, int* num2) {
                         // Need to check if there are any pieces 'in the way':
                         int j = y1 + 1;
                         int i = x1 + 1;
-                        for ( ; i < x2 && j < y2 ; ) {
+                        for ( ; i < x2 && j < y2 ; i++, j++ ) {
                             if ( board[j][i].id != ' ' ) return -1;
-                            i++;
-                            j++;
+                            // i++;
+                            // j++;
                         }
                         // Complete succes if next guard is passed:
                         if ( board[y2][x2].id == ' ' ||
@@ -183,10 +183,10 @@ void parseInput(char* pre, int* num1, int* num2) {
                         // Ditto as with Q1 but now we decrement j:
                         int j = y1 - 1;
                         int i = x1 + 1;
-                        for ( ; i < x2 && j > y2 ; ) {
+                        for ( ; i < x2 && j > y2 ; i++, j-- ) {
                             if ( board[j][i].id != ' ' ) return -1;
-                            i++;
-                            j--;
+                            // i++;
+                            // j--;
                         }
                         if ( board[y2][x2].id == ' ' ||
                             canCapture(x1, y1, x2, y2) ) moveSuccess(x1, y1, x2, y2);
@@ -202,10 +202,10 @@ void parseInput(char* pre, int* num1, int* num2) {
                         // Now we decrement i & not j:
                         int j = y1 + 1;
                         int i = x1 - 1;
-                        for ( ; i > x2 && j < y2 ; ) {
+                        for ( ; i > x2 && j < y2 ; i--, j++ ) {
                             if ( board[j][i].id != ' ' ) return -1;
-                            i--;
-                            j++;
+                            // i--;
+                            // j++;
                         }
                         if ( board[y2][x2].id == ' ' ||
                             canCapture(x1, y1, x2, y2) ) moveSuccess(x1, y1, x2, y2);
@@ -219,10 +219,10 @@ void parseInput(char* pre, int* num1, int* num2) {
                         // Decrement both now:
                         int j = y1 - 1;
                         int i = x1 - 1;
-                        for ( ; i > x2 && j > y2 ; ) {
+                        for ( ; i > x2 && j > y2 ; i--, j-- ) {
                             if ( board[j][i].id != ' ' ) return -1;
-                            i--;
-                            j--;
+                            // i--;
+                            // j--;
                         }
                         if ( board[y2][x2].id == ' ' ||
                             canCapture(x1, y1, x2, y2) ) moveSuccess(x1, y1, x2, y2);
@@ -245,16 +245,16 @@ void parseInput(char* pre, int* num1, int* num2) {
                 // Like the bishop, we need to check if there are any pieces 'in the way':
                 if ( y2 > y1 ) {
                     int j = y1 + 1;
-                    for ( ; j < y2 ; ) {
+                    for ( ; j < y2 ; j++ ) {
                         if ( board[j][x1].id != ' ' ) return -1;
-                        j++;
+                        // j++;
                     }
                 }
                 else {
                     int j = y1 - 1;
-                    for ( ; j > y2 ; ) {
+                    for ( ; j > y2 ; j-- ) {
                         if ( board[j][x1].id != ' ' ) return -1;
-                        j--;
+                        // j--;
                     }
                 }
                 if ( board[y2][x2].id == ' ' ||
@@ -265,16 +265,16 @@ void parseInput(char* pre, int* num1, int* num2) {
             else {
                 if ( x2 > x1 ) {
                     int i = x1 + 1;
-                    for ( ; i < x2 ; ) {
+                    for ( ; i < x2 ; i++ ) {
                         if ( board[y1][i].id != ' ' ) return -1;
-                        i++;
+                        // i++;
                     }
                 }
                 else {
                     int i = x1 - 1;
-                    for ( ; i > x2 ; ) {
+                    for ( ; i > x2 ; i-- ) {
                         if ( board[y1][i].id != ' ' ) return -1;
-                        i--;
+                        // i--;
                     }
                 }
                 if ( board[y2][x2].id == ' ' ||
@@ -319,9 +319,9 @@ void parseInput(char* pre, int* num1, int* num2) {
             int xDistSq = ( x2 - x1 ) * ( x2 - x1 );
             int yDistSq = ( y2 - y1 ) * ( y2 - y1 );
             if ( ( xDistSq == 1 && yDistSq == 4 ) ||
-                    ( xDistSq == 4 && yDistSq == 1 ) ) {
+                 ( xDistSq == 4 && yDistSq == 1 ) ) {
                 if ( board[y2][x2].id == ' ' ||
-                    canCapture(x1, y1, x2, y2) ) moveSuccess(x1, y1, x2, y2);
+                     canCapture(x1, y1, x2, y2) ) moveSuccess(x1, y1, x2, y2);
                 else return -1;
             }
             else return -1;
@@ -337,7 +337,7 @@ void parseInput(char* pre, int* num1, int* num2) {
                 ( x1 == x2 && y1 == y2 ) ) return -1;
             // Check if source is invalid:
             else if ( board[y1][x1].id == ' ' ) {
-                printf("There is no piece on that tile.\n");
+                puts("There is no piece on that tile.");
                 return -1;
             }
             
@@ -398,7 +398,7 @@ int main(void) {
     // Integer to store the menu of options
     int choice = -1;
 
-    // Int/bool to escape while loop later
+    // Bool to escape while loop later
     bool play = true;
 
     // Char to store turn order, W == White's turn, B == Black's turn
@@ -427,12 +427,12 @@ int main(void) {
 
     while ( play ) {
         printBoard();
-        printf("\n\nPlease select one of the following options:\n");
-        printf("\t1. Print the board\n");
-        printf("\t2. Make a move\n");
-        printf("\t3. Concede\n");
+        puts("\n\nPlease select one of the following options:");
+        puts("\t1. Print the board");
+        puts("\t2. Make a move");
+        puts("\t3. Concede");
         scanf("%d", &choice);
-        printf("\n");
+        puts("");
         switch ( choice ) {
             case 1 :
                 printBoard();
@@ -440,7 +440,7 @@ int main(void) {
 
             case 2 :
                 printf("It is %s's turn right now. ", ( turn == W ? "White" : "Black" ) );
-                printf("Please enter a move & follow this format 'A5,B8':\n");
+                puts("Please enter a move & follow this format 'A5,B8':");
                 scanf("%5s", target);
                 target[5] = '\0';
                 x1 = *target - 'A'; // Normalizes a char 'A' to an int 0
@@ -449,9 +449,9 @@ int main(void) {
                 y2 = *(target + 4) - '1';
                 /*printf("#1 as numbers is: [%d][%d]\n", y1, x1);
                 printf("#2 as numbers is: [%d][%d]\n", y2, x2);*/
-                if ( board[y1][x1].color == turn ) {
+                if ( turn == board[y1][x1].color ) {
                     if ( movePiece(x1, y1, x2, y2) == -1 )
-                        printf("There was a problem please try again!\n\n");
+                        printf("There was a problem, please try again!\n\n");
                     else {
                         // Switch turns:
                         if ( turn == W ) turn = B;
@@ -462,9 +462,9 @@ int main(void) {
                 break;
 
             case 3 :
-                printf("Game over! Board state:\n");
+                puts("Game over! Board state:");
                 printBoard();
-                printf("\n");
+                puts("");
                 play = false;
                 break;
         }
