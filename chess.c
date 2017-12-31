@@ -162,6 +162,15 @@ void parseInput(char* pre, int* num1, int* num2) {
                 // Q1: ( x2 > x1 ) && ( y2 > y1 )
                 if ( y2 > y1 ) {
                     if ( x2 == x1 + (y2 - y1) ) {
+                        // Need to check if there are any pieces 'in the way':
+                        int j = y1 + 1;
+                        int i = x1 + 1;
+                        for ( ; i < x2 && j < y2 ; ) {
+                            if ( board[j][i].id != ' ' ) return -1;
+                            i++;
+                            j++;
+                        }
+                        // Complete succes if next guard is passed:
                         if ( board[y2][x2].id == ' ' ||
                             canCapture(x1, y1, x2, y2) ) moveSuccess(x1, y1, x2, y2);
                         else return -1;
@@ -171,6 +180,14 @@ void parseInput(char* pre, int* num1, int* num2) {
                 // Q2: ( x2 > x1 ) && ( y1 > y2 )
                 else {
                     if ( x2 == x1 + (y1 - y2) ) {
+                        // Ditto as with Q1 but now we decrement j:
+                        int j = y1 - 1;
+                        int i = x1 + 1;
+                        for ( ; i < x2 && j > y2 ; ) {
+                            if ( board[j][i].id != ' ' ) return -1;
+                            i++;
+                            j--;
+                        }
                         if ( board[y2][x2].id == ' ' ||
                             canCapture(x1, y1, x2, y2) ) moveSuccess(x1, y1, x2, y2);
                         else return -1;
@@ -182,6 +199,14 @@ void parseInput(char* pre, int* num1, int* num2) {
                 // Q3: ( x1 > x2 ) && ( y2 > y1 )
                 if ( y2 > y1 ) {
                     if ( x1 == x2 + (y2 - y1) ) {
+                        // Now we decrement i & not j:
+                        int j = y1 + 1;
+                        int i = x1 - 1;
+                        for ( ; i > x2 && j < y2 ; ) {
+                            if ( board[j][i].id != ' ' ) return -1;
+                            i--;
+                            j++;
+                        }
                         if ( board[y2][x2].id == ' ' ||
                             canCapture(x1, y1, x2, y2) ) moveSuccess(x1, y1, x2, y2);
                         else return -1;
@@ -191,6 +216,14 @@ void parseInput(char* pre, int* num1, int* num2) {
                 // Q4: ( x1 > x2 ) && ( y1 > y2 )
                 else {
                     if ( x1 == x2 + (y1 - y2) ) {
+                        // Decrement both now:
+                        int j = y1 - 1;
+                        int i = x1 - 1;
+                        for ( ; i > x2 && j > y2 ; ) {
+                            if ( board[j][i].id != ' ' ) return -1;
+                            i--;
+                            j--;
+                        }
                         if ( board[y2][x2].id == ' ' ||
                             canCapture(x1, y1, x2, y2) ) moveSuccess(x1, y1, x2, y2);
                         else return -1;
@@ -209,12 +242,41 @@ void parseInput(char* pre, int* num1, int* num2) {
 
             // Rook is moving vertically
             if ( x1 == x2 ) {
+                // Like the bishop, we need to check if there are any pieces 'in the way':
+                if ( y2 > y1 ) {
+                    int j = y1 + 1;
+                    for ( ; j < y2 ; ) {
+                        if ( board[j][x1].id != ' ' ) return -1;
+                        j++;
+                    }
+                }
+                else {
+                    int j = y1 - 1;
+                    for ( ; j > y2 ; ) {
+                        if ( board[j][x1].id != ' ' ) return -1;
+                        j--;
+                    }
+                }
                 if ( board[y2][x2].id == ' ' ||
                     canCapture(x1, y1, x2, y2) ) moveSuccess(x1, y1, x2, y2);
                 else return -1;
             }
             // Rook is moving horizontally
             else {
+                if ( x2 > x1 ) {
+                    int i = x1 + 1;
+                    for ( ; i < x2 ; ) {
+                        if ( board[y1][i].id != ' ' ) return -1;
+                        i++;
+                    }
+                }
+                else {
+                    int i = x1 - 1;
+                    for ( ; i > x2 ; ) {
+                        if ( board[y1][i].id != ' ' ) return -1;
+                        i--;
+                    }
+                }
                 if ( board[y2][x2].id == ' ' ||
                     canCapture(x1, y1, x2, y2) ) moveSuccess(x1, y1, x2, y2);
                 else return -1;
@@ -250,10 +312,14 @@ void parseInput(char* pre, int* num1, int* num2) {
         }
 
         int moveKnight(int x1, int y1, int x2, int y2) {
-            int move = distance(x1, y1, x2, y2);
-            // Knights will always move in an 'L-shape' which means that the distance should be 5^0.5
-            // Careful with floating point precision (it *should* be safe here)
-            if ( move == sqrt(5) ) {
+            if ( x1 == x2 || y1 == y2 ) return -1;
+            /* Knights will always move in an 'L-shape' which means that the Euclidean
+             * distance should be 5 ^ 0.5. However to avoid problems with floating point
+             * values, we'll be comparing the squares (instead of the square roots): */
+            int xDistSq = ( x2 - x1 ) * ( x2 - x1 );
+            int yDistSq = ( y2 - y1 ) * ( y2 - y1 );
+            if ( ( xDistSq == 1 && yDistSq == 4 ) ||
+                    ( xDistSq == 4 && yDistSq == 1 ) ) {
                 if ( board[y2][x2].id == ' ' ||
                     canCapture(x1, y1, x2, y2) ) moveSuccess(x1, y1, x2, y2);
                 else return -1;
@@ -271,7 +337,7 @@ void parseInput(char* pre, int* num1, int* num2) {
                 ( x1 == x2 && y1 == y2 ) ) return -1;
             // Check if source is invalid:
             else if ( board[y1][x1].id == ' ' ) {
-                printf("Thats an invalid move");
+                printf("There is no piece on that tile.\n");
                 return -1;
             }
             
@@ -309,7 +375,7 @@ void parseInput(char* pre, int* num1, int* num2) {
             }
             else if ( board[y1][x1].id == 'N') {
                 // Success:
-                if ( movePawn(x1, y1, x2, y2) == 0 ) return 0;
+                if ( moveKnight(x1, y1, x2, y2) == 0 ) return 0;
                 // Failure:
                 else return -1;
             }
@@ -336,7 +402,7 @@ int main(void) {
     bool play = true;
 
     // String containing the user's request; format for user input string is: "A1,A5"
-    char target[6]; 
+    char target[6];
     /*  Note that x-coordinates are used in the second dimension, while
      *  while y-coordinates are used in the first. I.e. D8 is board[7][3]
      *  Board looks like this:
@@ -348,28 +414,17 @@ int main(void) {
     int x2 = -1;
     int y2 = -1;
 
-    /*
-    printf("Please enter a move & follow this format 'A5,B8':\n");
-    scanf("%5s", target);
-    target[5] = '\0';
-    x1 = *target - 'A'; // Normalizes a char 'A' to an int 0
-    y1 = *(target + 1) - 49; // Normalizes a char '1' to an int 0
-    x2 = *(target + 3) - 'A';
-    y2 = *(target + 4) - 49;
-    printf("#1 as numbers is: [%d][%d]\n", y1, x1);
-    printf("#2 as numbers is: [%d][%d]\n", y2, x2);
-    printf("Target is: '%s'\n", target);
-    printf("movePiece results in %d\n", movePiece(0, 0, 0, 5));
-    */
 
     /* BUGS/CRASHES (1 - 3 have seemed to stop happening?):
         1. A6 was attempted as a valid move by a rook as the first move
         2. A6 was attempted as a valid move by a pawn as the fourth move
         3. A6 was attempted as a valid move by a bishop as the second move
+        4. King works with floating points but Knight doesn't, moveKnight changed to account for this
     */
 
     while ( play ) {
-        printf("Please select one of the following options:\n");
+        printBoard();
+        printf("\n\nPlease select one of the following options:\n");
         printf("\t1. Print the board\n");
         printf("\t2. Make a move\n");
         printf("\t3. Concede\n");
