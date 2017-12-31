@@ -398,8 +398,11 @@ int main(void) {
     // Integer to store the menu of options
     int choice = -1;
 
-    // Int to escape while loop later
+    // Int/bool to escape while loop later
     bool play = true;
+
+    // Char to store turn order, W == White's turn, B == Black's turn
+    char turn = W;
 
     // String containing the user's request; format for user input string is: "A1,A5"
     char target[6];
@@ -436,6 +439,7 @@ int main(void) {
                 break;
 
             case 2 :
+                printf("It is %s's turn right now. ", ( turn == W ? "White" : "Black" ) );
                 printf("Please enter a move & follow this format 'A5,B8':\n");
                 scanf("%5s", target);
                 target[5] = '\0';
@@ -445,8 +449,16 @@ int main(void) {
                 y2 = *(target + 4) - '1';
                 /*printf("#1 as numbers is: [%d][%d]\n", y1, x1);
                 printf("#2 as numbers is: [%d][%d]\n", y2, x2);*/
-                if ( movePiece(x1, y1, x2, y2) == -1 )
-                    printf("There was a problem please try again!\n\n");
+                if ( board[y1][x1].color == turn ) {
+                    if ( movePiece(x1, y1, x2, y2) == -1 )
+                        printf("There was a problem please try again!\n\n");
+                    else {
+                        // Switch turns:
+                        if ( turn == W ) turn = B;
+                        else turn = W;
+                    }
+                }
+                else printf("It is %s's turn right now so that piece can't move yet.\n\n", ( turn == W ? "White" : "Black" ) );
                 break;
 
             case 3 :
