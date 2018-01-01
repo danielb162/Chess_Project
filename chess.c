@@ -122,7 +122,7 @@ void parseInput(char* pre, int* num1, int* num2, int* num3, int* num4) {
             // Pawns can only ever move up/down one rank so these act as general checks:
             if ( ( board[y1][x1].color == W && y2 != (y1 + 1) ) ||
                 ( board[y1][x1].color == B && y2 != (y1 - 1) ) ) return -1;
-            // Without capture pawn can only move (progressively) within it's own file:
+            // Without capture pawn can only move (progressively) within its own file:
             else if ( x1 == x2 && board[y2][x2].id == ' ') {
                 moveSuccess(x1,y1, x2, y2);
             }
