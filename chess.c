@@ -1,4 +1,14 @@
+/* Bash terminal chess program
+ * Made by Daniel Busuttil and Simon Zheng, 2017
+ * */
+
 #include "chess.h"
+
+/* TO DO:
+ *  1. Implement pawn promoting
+ *  2. Allow for pawns to move two ranks when on their starting rank
+ *  3. Implement a file containing 'move history'
+ *  */
 
 // [Row][Column], i.e. [0][0] -> A1 & [5][3] -> D6
 Cell board[8][8];
@@ -46,41 +56,38 @@ void initializeBoard() {
     board[7][5].id = 'B';
     board[7][6].id = 'N';
     board[7][7].id = 'R';
-
 }
 
 //  Recall [0][0] -> A1 & [4][3] -> D5
 void printBoard() {
+    puts("Board state:\n");
     // Top padding:
-    printf("%s_________________\n", WHT);
+    printf("%s   _________________\n", WHT);
     for (int row = 7; row >= 0; row--) { // Row counter, i.e. 0 - 7 -> A - H
+    printf("%s%d  %s", LGR, ( row + 1 ), WHT ); // Print the rank 'markers'
         for (int col = 0; col <= 7; col++) {
-            if (board[row][col].color == B)
-                printf("%s|%s%c", WHT, YLW, board[row][col].id);
-            else if (board[row][col].color == W)
-                printf("%s|%s%c", WHT, LGN, board[row][col].id);
-            else printf("%s| ", WHT);
-            /* simz089s's printing w/ background printing implemented -might be useful later
-            if ((row+col)%2 == 0)
-                printf("%s%s|%s%s%c", DBG, DGR, board[row][col].color=='B'?RED:BLU, BBG, board[row][col].id);
-            else
-                printf("%s%s|%s%s%c", DBG, DGR, board[row][col].color=='W'?BLU:RED, WBG, board[row][col].id);
-            */
+            if ( board[row][col].color == B )
+                printf( "%s|%s%c", WHT, YLW, board[row][col].id );
+            else if ( board[row][col].color == W )
+                printf( "%s|%s%c", WHT, LGN, board[row][col].id );
+            else printf( "%s| ", WHT );
         }
         printf("%s|\n", WHT);
     }
     // Bottom padding:
-    printf("%s¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯%s\n\n", YLW, LGR);
+    printf("%s   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯%s\n", YLW, LGR);
+    puts("    A B C D E F G H \n"); // Print the file 'markers'
 }
 
-// Call-by-reference function to assign values to the int arrays appropriately
-void parseInput(char* pre, int* num1, int* num2) {
-    char temp = *pre;
-    //*num1 = atoi(temp); // Will transform the char into a 0 - 7 int
-    //*num2 = atoi(*( pre + 1 )) - 1; // Ditto
+// Call-by-reference function to assign values to the int appropriately
+void parseInput(char* pre, int* num1, int* num2, int* num3, int* num4) {
+    *num1 = *pre - 'A'; // Normalizes a char 'A' to an int 0
+    *num2 = *(pre + 1) - '1'; // Normalizes a char '1' to an int 0
+    *num3 = *(pre + 3) - 'A';
+    *num4 = *(pre + 4) - '1';
 }
 
-// Need to sort out later - TEMPORARILY from pieceRules.c:
+// Functions relating to how movePiece and it's various components
 
         // Function to turn given cell, board[x][y], to a 'blank' cell
         void blank(int x, int y) {
@@ -110,13 +117,12 @@ void parseInput(char* pre, int* num1, int* num2) {
             return sqrt( xSq + ySq );
         }
 
-        /* SUGGESTION: Return bool instead of int? */
         // Returns -1 if for ANY reason move is invalid
         int movePawn(int x1, int y1, int x2, int y2) {
-            // Pawns can only ever move up/down one row so these act as general checks:
+            // Pawns can only ever move up/down one rank so these act as general checks:
             if ( ( board[y1][x1].color == W && y2 != (y1 + 1) ) ||
                 ( board[y1][x1].color == B && y2 != (y1 - 1) ) ) return -1;
-            // Without capture pawn can only move (progressively) within it's rank:
+            // Without capture pawn can only move (progressively) within it's own file:
             else if ( x1 == x2 && board[y2][x2].id == ' ') {
                 moveSuccess(x1,y1, x2, y2);
             }
@@ -149,8 +155,6 @@ void parseInput(char* pre, int* num1, int* num2) {
                         int i = x1 + 1;
                         for ( ; i < x2 && j < y2 ; i++, j++ ) {
                             if ( board[j][i].id != ' ' ) return -1;
-                            // i++;
-                            // j++;
                         }
                         // Complete succes if next guard is passed:
                         if ( board[y2][x2].id == ' ' ||
@@ -167,8 +171,6 @@ void parseInput(char* pre, int* num1, int* num2) {
                         int i = x1 + 1;
                         for ( ; i < x2 && j > y2 ; i++, j-- ) {
                             if ( board[j][i].id != ' ' ) return -1;
-                            // i++;
-                            // j--;
                         }
                         if ( board[y2][x2].id == ' ' ||
                             canCapture(x1, y1, x2, y2) ) moveSuccess(x1, y1, x2, y2);
@@ -186,8 +188,6 @@ void parseInput(char* pre, int* num1, int* num2) {
                         int i = x1 - 1;
                         for ( ; i > x2 && j < y2 ; i--, j++ ) {
                             if ( board[j][i].id != ' ' ) return -1;
-                            // i--;
-                            // j++;
                         }
                         if ( board[y2][x2].id == ' ' ||
                             canCapture(x1, y1, x2, y2) ) moveSuccess(x1, y1, x2, y2);
@@ -203,8 +203,6 @@ void parseInput(char* pre, int* num1, int* num2) {
                         int i = x1 - 1;
                         for ( ; i > x2 && j > y2 ; i--, j-- ) {
                             if ( board[j][i].id != ' ' ) return -1;
-                            // i--;
-                            // j--;
                         }
                         if ( board[y2][x2].id == ' ' ||
                             canCapture(x1, y1, x2, y2) ) moveSuccess(x1, y1, x2, y2);
@@ -229,14 +227,12 @@ void parseInput(char* pre, int* num1, int* num2) {
                     int j = y1 + 1;
                     for ( ; j < y2 ; j++ ) {
                         if ( board[j][x1].id != ' ' ) return -1;
-                        // j++;
                     }
                 }
                 else {
                     int j = y1 - 1;
                     for ( ; j > y2 ; j-- ) {
                         if ( board[j][x1].id != ' ' ) return -1;
-                        // j--;
                     }
                 }
                 if ( board[y2][x2].id == ' ' ||
@@ -249,14 +245,12 @@ void parseInput(char* pre, int* num1, int* num2) {
                     int i = x1 + 1;
                     for ( ; i < x2 ; i++ ) {
                         if ( board[y1][i].id != ' ' ) return -1;
-                        // i++;
                     }
                 }
                 else {
                     int i = x1 - 1;
                     for ( ; i > x2 ; i-- ) {
                         if ( board[y1][i].id != ' ' ) return -1;
-                        // i--;
                     }
                 }
                 if ( board[y2][x2].id == ' ' ||
@@ -364,15 +358,9 @@ void parseInput(char* pre, int* num1, int* num2) {
             else return -1;
         }
 
-// End of code from pieceRules.c
+// End of code relating to movePiece
 
 int main(void) {
- 
-    /* Sanity check for clean_board:
-    printf("A8's id is: \033[1;37m%c\033[0m\nD7's id is: \033[1;30m%c\033[0m\n", A8.id, D7.id);
-    printf("A1's id is %c, it's color is %c\n", row1[0].id, row1[0].color);
-    printf("Size is: %d\n", sizeof(board[6][0].id)); 
-    printf("A7's id is %c, it's color is %c\n", board[6][0].id, board[6][0].color);*/
 
     // Setting up an empty board:
     initializeBoard();
@@ -416,26 +404,24 @@ int main(void) {
         scanf("%d", &choice);
         puts("");
         switch ( choice ) {
+            // Want the board state to be printed:
             case 1 :
                 printBoard();
                 break;
 
+            // Want to move a piece:
             case 2 :
                 printf("It is %s's turn right now. ", ( turn == W ? "White" : "Black" ) );
                 puts("Please enter a move & follow this format 'A5,B8':");
                 scanf("%5s", target);
                 target[5] = '\0';
-                x1 = *target - 'A'; // Normalizes a char 'A' to an int 0
-                y1 = *(target + 1) - '1'; // Normalizes a char '1' to an int 0
-                x2 = *(target + 3) - 'A';
-                y2 = *(target + 4) - '1';
-                /*printf("#1 as numbers is: [%d][%d]\n", y1, x1);
-                printf("#2 as numbers is: [%d][%d]\n", y2, x2);*/
+                parseInput( target, &x1, &y1, &x2, &y2 );
+
                 if ( turn == board[y1][x1].color ) {
                     if ( movePiece(x1, y1, x2, y2) == -1 )
                         printf("There was a problem, please try again!\n\n");
                     else {
-                        // Switch turns:
+                        // Switch turns if move was successful:
                         if ( turn == W ) turn = B;
                         else turn = W;
                     }
@@ -443,6 +429,7 @@ int main(void) {
                 else printf("It is %s's turn right now so that piece can't move yet.\n\n", ( turn == W ? "White" : "Black" ) );
                 break;
 
+            // Want to exit:
             case 3 :
                 puts("Game over! Board state:");
                 printBoard();

@@ -32,6 +32,6 @@
 
     void initializeBoard();
     void printBoard();
-    void parseInput(char* pre, int* num1, int* num2);
+    void parseInput(char* pre, int* num1, int* num2, int* num3, int* num4);
     
 #endif
