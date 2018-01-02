@@ -408,7 +408,7 @@ int main(void) {
     */
 
     // Erase previous game's move history
-    system("rm -f move_history.txt");
+    fclose(fopen("move_history.txt", "wt"));
 
     while ( play ) {
         printBoard();
@@ -480,11 +480,12 @@ int main(void) {
             {
                 // Open a FILE ptr to read & print move history:
                 FILE* rp = fopen("move_history.txt", "rt");
-                if ( rp == NULL ) puts("No moves have been played yet!");
+                if ( feof(rp) || rp == NULL ) puts("The move history is empty!");
                 else {
-                    puts("Here is the move history:");
                     char line[20] = "";
                     fgets(line, sizeof(line), rp);
+                    if ( strcmp(line, "") == 0 ) puts("No moves have been played yet!");
+                    else puts("Here is the move history:");
                     while ( !feof(rp) && rp != NULL ) {
                         printf("%s", line);
                         fgets(line, sizeof(line), rp);
