@@ -374,6 +374,9 @@ int main(void) {
     // Char to store turn order, W == White's turn, B == Black's turn
     char turn = W;
 
+    // Int used in fprinting the move history
+    int tCounter = 1;
+
     // String containing the user's request; format for user input string is: "A1,A5"
     char target[6];
     /*  Note that x-coordinates are used in the second dimension, while
@@ -395,12 +398,16 @@ int main(void) {
         4. King works with floating points but Knight doesn't, moveKnight changed to account for this
     */
 
+    // Erase previous game's move history
+    system("rm -f move_history.txt");
+
     while ( play ) {
         printBoard();
         puts("\n\nPlease select one of the following options:");
         puts("\t1. Print the board");
         puts("\t2. Make a move");
         puts("\t3. Concede");
+        puts("\t4. See move history");
         scanf("%d", &choice);
         puts("");
         switch ( choice ) {
@@ -418,9 +425,14 @@ int main(void) {
                 parseInput( target, &x1, &y1, &x2, &y2 );
 
                 if ( turn == board[y1][x1].color ) {
+                    char symbol = board[y1][x1].id;
                     if ( movePiece(x1, y1, x2, y2) == -1 )
                         printf("There was a problem, please try again!\n\n");
                     else {
+                        // Record move made with a file pointer in append-mode:
+                        FILE *wp = fopen("move_history.txt", "at");
+                        fprintf(wp, "%d. %c%c(%c%c) to %c%c,\n", tCounter, ( x1 + 'A' ), ( y1 + '1' ), turn, symbol, ( x2 + 'A' ), ( y2 + '1' ));
+                        fclose(wp);
                         // Switch turns if move was successful:
                         if ( turn == W ) turn = B;
                         else turn = W;
@@ -435,6 +447,22 @@ int main(void) {
                 printBoard();
                 puts("");
                 play = false;
+                break;
+
+            // Want to print/see move history of the game
+            case 4 :
+                // Open a FILE ptr to read & print move history:
+                FILE *rp = fopen("move_history.txt", "rt");
+                if ( rp == NULL ) puts("No moves have been played yet!");
+                else {
+                    puts("Here is the move history:");
+                    char line[20];
+                    do {
+                        fgets(line, 19, rp);
+                        printf("%s", line);
+                    } while( !feof(rp) );
+                }
+                fclose(rp);
                 break;
         }
         printf("\n\n\n\n\n\n\n");
