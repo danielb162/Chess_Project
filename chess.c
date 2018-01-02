@@ -497,7 +497,7 @@ int main(void) {
                 puts("Something went wrong...");
                 exit(-1);
         }
-        printf("\n\n\n\n\n\n\n");
+        puts("\n--------------------------------------------------------------------------------\n");
     }
 
     // No errors encountered
