@@ -480,7 +480,7 @@ int main(void) {
             {
                 // Open a FILE ptr to read & print move history:
                 FILE* rp = fopen("move_history.txt", "rt");
-                if ( feof(rp) || rp == NULL ) puts("The move history is empty!");
+                if ( feof(rp) || rp == NULL ) puts("The move history does not exist.");
                 else {
                     char line[20] = "";
                     fgets(line, sizeof(line), rp);
