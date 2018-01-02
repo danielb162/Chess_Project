@@ -1,3 +1,5 @@
 *.o
 *.out
 chess
+move_history.txt
+
