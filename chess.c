@@ -454,8 +454,10 @@ int main(void) {
                         printf("There was a problem, please try again!\n\n");
                     else {
                         // Record move made with a file pointer in append-mode:
-                        FILE *wp = fopen("move_history.txt", "at");
-                        fprintf(wp, "%d. %c%c(%c%c) to %c%c,\n", tCounter, ( x1 + 'A' ), ( y1 + '1' ), turn, symbol, ( x2 + 'A' ), ( y2 + '1' ));
+                        FILE* wp = fopen("move_history.txt", "at");
+                        fprintf(wp, "%d. %c%c(%c%c) to %c%c,\n", tCounter,
+                                ( x1 + 'A' ), ( y1 + '1' ), turn, symbol,
+                                ( x2 + 'A' ), ( y2 + '1' ));
                         fclose(wp);
                         // Switch turns if move was successful:
                         if ( turn == W ) turn = B;
@@ -475,8 +477,9 @@ int main(void) {
 
             // Want to print/see move history of the game
             case 4 :
+            {
                 // Open a FILE ptr to read & print move history:
-                FILE *rp = fopen("move_history.txt", "rt");
+                FILE* rp = fopen("move_history.txt", "rt");
                 if ( rp == NULL ) puts("No moves have been played yet!");
                 else {
                     puts("Here is the move history:");
@@ -488,6 +491,7 @@ int main(void) {
                 }
                 fclose(rp);
                 break;
+            }
             
             // If for some reason even the input check fails
             default :
