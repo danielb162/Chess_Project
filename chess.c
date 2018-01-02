@@ -419,7 +419,6 @@ int main(void) {
         puts("\t4. See move history");
 
         // Take in user input:
-        scanf("%d", &choice);
         while ( scanf("%d", &choice) != 1 || choice < 1 || choice > 4 ) {
             do {
                 choice = getchar();
