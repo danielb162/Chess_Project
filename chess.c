@@ -458,6 +458,7 @@ int main(void) {
                                 ( x1 + 'A' ), ( y1 + '1' ), turn, symbol,
                                 ( x2 + 'A' ), ( y2 + '1' ));
                         fclose(wp);
+                        tCounter++;
                         // Switch turns if move was successful:
                         if ( turn == W ) turn = B;
                         else turn = W;
@@ -482,11 +483,12 @@ int main(void) {
                 if ( rp == NULL ) puts("No moves have been played yet!");
                 else {
                     puts("Here is the move history:");
-                    char line[20];
-                    do {
-                        fgets(line, 19, rp);
+                    char line[20] = "";
+                    fgets(line, sizeof(line), rp);
+                    while ( !feof(rp) && rp != NULL ) {
                         printf("%s", line);
-                    } while( !feof(rp) );
+                        fgets(line, sizeof(line), rp);
+                    }
                 }
                 fclose(rp);
                 break;
