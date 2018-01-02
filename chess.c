@@ -79,6 +79,15 @@ void printBoard() {
     puts("    A B C D E F G H \n"); // Print the file 'markers'
 }
 
+// Check if input is in format "A1,B2"
+bool validInput(char input[5]) {
+    if ( input[0] >= 'A' && input[0] <= 'Z' &&
+         input[1] >= '1' && input[1] <= '8' &&
+         input[3] >= 'A' && input[3] <= 'Z' &&
+         input[4] >= '1' && input[4] <= '8' ) return true;
+    return false;
+}
+
 // Call-by-reference function to assign values to the int appropriately
 void parseInput(char* pre, int* num1, int* num2, int* num3, int* num4) {
     *num1 = *pre - 'A'; // Normalizes a char 'A' to an int 0
@@ -122,7 +131,7 @@ void parseInput(char* pre, int* num1, int* num2, int* num3, int* num4) {
             // Pawns can only ever move up/down one rank so these act as general checks:
             if ( ( board[y1][x1].color == W && y2 != (y1 + 1) ) ||
                 ( board[y1][x1].color == B && y2 != (y1 - 1) ) ) return -1;
-            // Without capture pawn can only move (progressively) within it's own file:
+            // Without capture pawn can only move (progressively) within its own file:
             else if ( x1 == x2 && board[y2][x2].id == ' ') {
                 moveSuccess(x1,y1, x2, y2);
             }
@@ -408,8 +417,18 @@ int main(void) {
         puts("\t2. Make a move");
         puts("\t3. Concede");
         puts("\t4. See move history");
+
+        // Take in user input:
         scanf("%d", &choice);
+        while ( scanf("%d", &choice) != 1 || choice < 1 || choice > 4 ) {
+            do {
+                choice = getchar();
+            } while (choice != '\n' && choice != EOF);
+            puts("Please input choice 1, 2, 3 or 4.");
+        }
         puts("");
+
+        // Act based on user input
         switch ( choice ) {
             // Want the board state to be printed:
             case 1 :
@@ -419,9 +438,14 @@ int main(void) {
             // Want to move a piece:
             case 2 :
                 printf("It is %s's turn right now. ", ( turn == W ? "White" : "Black" ) );
-                puts("Please enter a move & follow this format 'A5,B8':");
-                scanf("%5s", target);
-                target[5] = '\0';
+                do {
+                    puts("Please enter a move & follow this format 'A5,B8':");
+                    scanf("%5s", target);
+                    do {
+                        target[5] = getchar();
+                    } while (target[5] != '\n' && choice != EOF);
+                    target[5] = '\0';
+                } while ( !validInput(target) );
                 parseInput( target, &x1, &y1, &x2, &y2 );
 
                 if ( turn == board[y1][x1].color ) {
@@ -464,6 +488,11 @@ int main(void) {
                 }
                 fclose(rp);
                 break;
+            
+            // If for some reason even the input check fails
+            default :
+                puts("Something went wrong...");
+                exit(-1);
         }
         printf("\n\n\n\n\n\n\n");
     }
