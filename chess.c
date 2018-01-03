@@ -410,6 +410,9 @@ int main(void) {
     // Integer to store the menu of options
     int choice = -1;
 
+    // Char used to keep or discard the logfile (different from move_history.txt):
+    char logkeep = -1;
+
     // Bool to escape while loop later
     bool play = true;
 
@@ -443,6 +446,11 @@ int main(void) {
     // Erase previous game's move history
     fclose(fopen("move_history.txt", "wt"));
 
+    FILE* check = fopen("move_log.txt", "rt");
+    if ( !( check ) ) puts("Log is empty");
+    else puts("Log file is not empty");
+
+    // Game's loop
     while ( play ) {
         printBoard();
         puts("\n\nPlease select one of the following options:");
@@ -478,8 +486,10 @@ int main(void) {
                     } while (target[5] != '\n' && choice != EOF);
                     target[5] = '\0';
                 } while ( !validInput(target) );
+                // Use the newly filled array, target, to assign values to the variables:
                 parseInput( target, &x1, &y1, &x2, &y2 );
 
+                // To make sure pieces are only moved on their own turn:
                 if ( turn == board[y1][x1].color ) {
                     char symbol = board[y1][x1].id;
                     if ( movePiece(x1, y1, x2, y2) == -1 )
@@ -490,6 +500,12 @@ int main(void) {
                         fprintf(wp, "%d. %c%c(%c%c) to %c%c,\n", tCounter,
                                 ( x1 + 'A' ), ( y1 + '1' ), turn, symbol,
                                 ( x2 + 'A' ), ( y2 + '1' ));
+                        fclose(wp);
+                        // Record move for (possible) reconstruction purposes:
+                        wp = fopen("move_log.txt", "at");
+                        fprintf(wp, "%c%c,%c%c\n",
+                                ( x1 + 'A' ), ( y1 + '1' ),
+                                ( x2 + 'A' ), ( y2 + '1' ) );
                         fclose(wp);
                         tCounter++;
                         // Switch turns if move was successful:
@@ -506,6 +522,17 @@ int main(void) {
                 printBoard();
                 puts("");
                 play = false;
+
+                puts("Would you like to keep the log-file? 'Y' or 'n'");
+                while ( scanf("%c", &logkeep) != 1 ||
+                      ( logkeep != 'Y' && logkeep != 'n' ) ) {
+                    do {
+                        logkeep = getchar();
+                    } while (logkeep != '\n' && logkeep != EOF);
+                    puts("Please input either 'Y' or 'n' (without the single quotes):");
+                }
+                puts("");
+
                 break;
 
             // Want to print/see move history of the game
@@ -535,6 +562,9 @@ int main(void) {
         }
         puts("\n--------------------------------------------------------------------------------\n");
     }
+
+    // If player doesn't want to keep the log file, we delete it:
+    if ( logkeep == 'n' ) system("rm -f move_log.txt");
 
     // No errors encountered
     return EXIT_SUCCESS;
