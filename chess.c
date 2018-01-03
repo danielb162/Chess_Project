@@ -126,18 +126,51 @@ void parseInput(char* pre, int* num1, int* num2, int* num3, int* num4) {
             return sqrt( xSq + ySq );
         }
 
+        void pawnPromote( int x1, int y1 ) {
+                 if ( ( board[y1][x1].color == W && y1 == 6 ) ||
+                    ( board[y1][x1].color == B && y1 == 1 ) ) {
+                    puts("\nWhat would you like to promote your pawn to? Please choose from: 'N', 'B', 'Q' or 'R'");
+                    char choice = -1;
+                    while ( scanf("%c", &choice) != 1 ||
+                            (choice != 'N' && choice != 'B' && choice != 'Q' && choice != 'R') ) {
+                        do {
+                            choice = getchar();
+                        } while (choice != '\n' && choice != EOF);
+                        puts("Please input 'N', 'B', 'Q' or 'R' (without the single-quotes)");
+                    }
+                    puts("");
+                    board[y1][x1].id = choice;
+                }
+        }
+
+        // B8,A1 -> ( 1, 7, 0, 0 )
+
         // Returns -1 if for ANY reason move is invalid
         int movePawn(int x1, int y1, int x2, int y2) {
-            // Pawns can only ever move up/down one rank so these act as general checks:
-            if ( ( board[y1][x1].color == W && y2 != (y1 + 1) ) ||
-                ( board[y1][x1].color == B && y2 != (y1 - 1) ) ) return -1;
-            // Without capture pawn can only move (progressively) within its own file:
-            else if ( x1 == x2 && board[y2][x2].id == ' ') {
+            // Pawns can never move backwards:
+            if ( ( board[y1][x1].color == W && y2 < y1 ) ||
+                    ( board[y1][x1].color == B && y2 > y1 ) ) return -1; 
+                    
+            int yDistSq = ( y2 - y1 ) * ( y2 - y1 );
+            // If it is their first move, Pawns can either move 1 or two ranks (within their own file)
+            if ( ( board[y1][x1].color == W && y1 == 1 ) ||
+                ( board[y1][x1].color == B && y1 == 6 ) ) {
+                if ( !( yDistSq == 1 || yDistSq == 4 ) ) return -1;
+            }
+            else {
+                // Pawns can only ever move up/down one rank (if it's not their first move) so:
+                if ( yDistSq != 1 ) return -1;
+            }
+
+            // Without capture a Pawn can only move (progressively) within its own file:
+            if ( x1 == x2 && board[y2][x2].id == ' ') {
+                pawnPromote(x1, y1);
                 moveSuccess(x1,y1, x2, y2);
             }
             // Check if capture is possible and capture if so:
             else if ( (x2 == (x1 + 1) || x2 == (x1 - 1) ) ) {
                 if ( canCapture(x1, y1, x2, y2) ) {
+                    pawnPromote(x1, y1);
                     moveSuccess(x1, y1, x2, y2);
                 }
                 else return -1;
