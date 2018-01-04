@@ -34,5 +34,17 @@
     void printBoard();
     bool validInput(char input[5]);
     void parseInput(char* pre, int* num1, int* num2, int* num3, int* num4);
+    void blank(int x, int y);
+    void moveSuccess(int x1, int y1, int x2, int y2);
+    int canCapture(int x1, int y1, int x2, int y2);
+    int distance(int x1, int y1, int x2, int y2);
+    void pawnPromote(int x1, int y1);
+    int movePawn(int x1, int y1, int x2, int y2);
+    int moveBishop(int x1, int y1, int x2, int y2);
+    int moveRook(int x1, int y1, int x2, int y2);
+    int moveQueen(int x1, int y1, int x2, int y2);
+    int moveKing(int x1, int y1, int x2, int y2);
+    int moveKnight(int x1, int y1, int x2, int y2);
+    int movePiece(int x1, int y1, int x2, int y2);
     
 #endif
