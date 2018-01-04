@@ -133,6 +133,7 @@ void parseInput(char* pre, int* num1, int* num2, int* num3, int* num4) {
                     char choice = getchar();
                     while ( (choice != 'N' && choice != 'B' && choice != 'Q' && choice != 'R') ) {
                         puts("Please input 'N', 'B', 'Q' or 'R' (without the single-quotes)");
+                        choice = getchar();
                     }
                     puts("");
                     board[y1][x1].id = choice;
@@ -407,7 +408,7 @@ int main(void) {
     int choice = -1;
 
     // Char used to keep or discard the logfile (different from move_history.txt):
-    char logkeep = -1;
+    char logkeep = '\0';
 
     // Bool to escape while loop later
     bool play = true;
@@ -443,7 +444,7 @@ int main(void) {
     fclose(fopen("move_history.txt", "wt"));
 
     FILE* check = fopen("move_log.txt", "rt");
-    if ( !( check ) ) puts("Log is empty");
+    if ( !check ) puts("Log is empty");
     else puts("Log file is not empty");
 
     // Game's loop
@@ -492,17 +493,17 @@ int main(void) {
                         printf("There was a problem, please try again!\n\n");
                     else {
                         // Record move made with a file pointer in append-mode:
-                        FILE* wp = fopen("move_history.txt", "at");
-                        fprintf(wp, "%d. %c%c(%c%c) to %c%c,\n", tCounter,
+                        FILE* mh = fopen("move_history.txt", "at");
+                        fprintf(mh, "%d. %c%c(%c%c) to %c%c,\n", tCounter,
                                 ( x1 + 'A' ), ( y1 + '1' ), turn, symbol,
                                 ( x2 + 'A' ), ( y2 + '1' ));
-                        fclose(wp);
+                        fclose(mh);
                         // Record move for (possible) reconstruction purposes:
-                        wp = fopen("move_log.txt", "at");
-                        fprintf(wp, "%c%c,%c%c\n",
+                        FILE* ml = fopen("move_log.txt", "at");
+                        fprintf(ml, "%c%c,%c%c\n",
                                 ( x1 + 'A' ), ( y1 + '1' ),
                                 ( x2 + 'A' ), ( y2 + '1' ) );
-                        fclose(wp);
+                        fclose(ml);
                         tCounter++;
                         // Switch turns if move was successful:
                         if ( turn == W ) turn = B;
@@ -520,12 +521,10 @@ int main(void) {
                 play = false;
 
                 puts("Would you like to keep the log-file? 'Y' or 'n'");
-                while ( scanf("%c", &logkeep) != 1 ||
-                      ( logkeep != 'Y' && logkeep != 'n' ) ) {
-                    do {
-                        logkeep = getchar();
-                    } while (logkeep != '\n' && logkeep != EOF);
+                logkeep = getchar();
+                while ( logkeep != 'Y' && logkeep != 'n' ) {
                     puts("Please input either 'Y' or 'n' (without the single quotes):");
+                    logkeep = getchar();
                 }
                 puts("");
 
