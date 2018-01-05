@@ -30,6 +30,7 @@
     static const char B = 'B';
     static const char W = 'W';
 
+    // Function prototypes:
     void initializeBoard();
     void printBoard();
     bool validInput(char input[5]);
@@ -46,5 +47,6 @@
     int moveKing(int x1, int y1, int x2, int y2);
     int moveKnight(int x1, int y1, int x2, int y2);
     int movePiece(int x1, int y1, int x2, int y2);
+    int rebuildBoard(const char * path, char* turn, int* tCounter);
     
 #endif

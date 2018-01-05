@@ -399,6 +399,44 @@ void parseInput(char* pre, int* num1, int* num2, int* num3, int* num4) {
 
 // End of code relating to movePiece
 
+// Function to rebuild a game from a logfile:
+int rebuildBoard(const char * path, char* turn, int* tCounter) {
+    char command[6];
+    int x1;
+    int y1;
+    int x2;
+    int y2;
+    FILE* fPtr = fopen(path, "rt");
+    if ( fPtr == NULL ) {
+        puts("Something went wrong, I'm sorry you'll have to start a new game");
+        return -1;
+    }
+    else {
+        char symbol = -1;
+        // SIMZ LOOK HERE: For some reason "There is no piece on that tile" is printed once...
+        do {
+            fscanf( fPtr, "%6s", command );
+            parseInput( command, &x1, &y1, &x2, &y2 );
+            /* We'd like the move history of the previous game to continue into this one; Note
+             * we don't need to wipe it because we only call this function after already wiping it.
+             * We need to set up the requisite helper chars/ints for printing to move_history.txt */
+            symbol = board[y1][x1].id;
+            *turn = ( *tCounter % 2 == 0 ? B : W );
+            movePiece( x1, y1, x2, y2 );
+            FILE* mh = fopen("move_history.txt", "at");
+            fprintf(mh, "%d. %c%c(%c%c) to %c%c,\n", *tCounter,
+                    ( x1 + 'A' ), ( y1 + '1' ), *turn, symbol,
+                    ( x2 + 'A' ), ( y2 + '1' ));
+            fclose(mh);
+            *tCounter = *tCounter + 1;
+        } while ( !feof(fPtr) );
+    }
+    puts("Your game is rebuilt!");
+    fclose(fPtr);
+    return 0;
+}
+
+
 int main(void) {
 
     // Setting up an empty board:
@@ -443,9 +481,21 @@ int main(void) {
     // Erase previous game's move history
     fclose(fopen("move_history.txt", "wt"));
 
+    // Offer to recreate/resume previous game from existing log-file:
     FILE* check = fopen("move_log.txt", "rt");
     if ( !check ) puts("Log is empty");
-    else puts("Log file is not empty");
+    else {
+        char logChoice = -1;
+        puts("Log file is not empty, would you like to rebuild from a previous game? Y/n");
+        logChoice = getchar();
+        while ( logChoice != 'Y' && logChoice != 'n' ) {
+            puts("Please input either 'Y' or 'n' (without the single quotes):");
+            logChoice = getchar();
+        }
+        if ( logChoice == 'Y') rebuildBoard("move_log.txt", &turn, &tCounter);
+        else puts("Understood, here is your fresh game, good luck and have fun!");
+        puts("");
+    }
 
     // Game's loop
     while ( play ) {
@@ -461,7 +511,7 @@ int main(void) {
             do {
                 choice = getchar();
             } while (choice != '\n' && choice != EOF);
-            puts("Please input choice 1, 2, 3 or 4.");
+            puts("Please input choice 1, 2, 3, 4 or 5.");
         }
         puts("");
 
@@ -521,6 +571,9 @@ int main(void) {
                 play = false;
 
                 puts("Would you like to keep the log-file? 'Y' or 'n'");
+                /* We do an extra getchar here to remove the newline left in stdin from
+                 * scanf'ing an int (when we used scanf to get a value for choice) */
+                getchar();
                 logkeep = getchar();
                 while ( logkeep != 'Y' && logkeep != 'n' ) {
                     puts("Please input either 'Y' or 'n' (without the single quotes):");
