@@ -413,21 +413,22 @@ int rebuildBoard(const char* path, char* turn, int* tCounter) {
     }
     else {
         char symbol = '\0';
-        // SIMZ LOOK HERE: For some reason "There is no piece on that tile" is printed once...
         FILE* mh = fopen("move_history.txt", "at");
         do {
             fgets( command, sizeof(command), fPtr );
-            parseInput( command, &x1, &y1, &x2, &y2 );
-            /* We'd like the move history of the previous game to continue into this one; Note
-             * we don't need to wipe it because we only call this function after already wiping it.
-             * We need to set up the requisite helper chars/ints for printing to move_history.txt */
-            symbol = board[y1][x1].id;
-            *turn = ( *tCounter % 2 == 0 ? B : W );
-            movePiece( x1, y1, x2, y2 );
-            fprintf(mh, "%d. %c%c(%c%c) to %c%c,\n", *tCounter,
-                    ( x1 + 'A' ), ( y1 + '1' ), *turn, symbol,
-                    ( x2 + 'A' ), ( y2 + '1' ));
-            *tCounter = *tCounter + 1;
+            if ( validInput(command) ) {
+                parseInput( command, &x1, &y1, &x2, &y2 );
+                /* We'd like the move history of the previous game to continue into this one; Note
+                * we don't need to wipe it because we only call this function after already wiping it.
+                * We need to set up the requisite helper chars/ints for printing to move_history.txt */
+                symbol = board[y1][x1].id;
+                movePiece( x1, y1, x2, y2 );
+                fprintf(mh, "%d. %c%c(%c%c) to %c%c,\n", *tCounter,
+                        ( x1 + 'A' ), ( y1 + '1' ), *turn, symbol,
+                        ( x2 + 'A' ), ( y2 + '1' ));
+                (*tCounter)++;
+                *turn = ( *tCounter % 2 == 0 ? B : W );
+            }
         } while ( !feof(fPtr) );
         fclose(mh);
     }
