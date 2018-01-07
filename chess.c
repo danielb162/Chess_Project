@@ -400,7 +400,7 @@ void parseInput(char* pre, int* num1, int* num2, int* num3, int* num4) {
 // End of code relating to movePiece
 
 // Function to rebuild a game from a logfile:
-int rebuildBoard(const char * path, char* turn, int* tCounter) {
+int rebuildBoard(const char* path, char* turn, int* tCounter) {
     char command[6];
     int x1;
     int y1;
@@ -412,7 +412,7 @@ int rebuildBoard(const char * path, char* turn, int* tCounter) {
         return -1;
     }
     else {
-        char symbol = -1;
+        char symbol = '\0';
         // SIMZ LOOK HERE: For some reason "There is no piece on that tile" is printed once...
         do {
             fscanf( fPtr, "%6s", command );
@@ -485,7 +485,7 @@ int main(void) {
     FILE* check = fopen("move_log.txt", "rt");
     if ( !check ) puts("Log is empty");
     else {
-        char logChoice = -1;
+        char logChoice = '\0';
         puts("Log file is not empty, would you like to rebuild from a previous game? Y/n");
         logChoice = getchar();
         while ( logChoice != 'Y' && logChoice != 'n' ) {
@@ -572,9 +572,12 @@ int main(void) {
 
                 puts("Would you like to keep the log-file? 'Y' or 'n'");
                 /* We do an extra getchar here to remove the newline left in stdin from
-                 * scanf'ing an int (when we used scanf to get a value for choice) */
-                getchar();
+                 * scanf'ing an int (when we used scanf to get a value for choice)
+                 * Also cover the case of user inputting nothing */
                 logkeep = getchar();
+                while ( logkeep == '\n' ) {
+                    logkeep = getchar();
+                }
                 while ( logkeep != 'Y' && logkeep != 'n' ) {
                     puts("Please input either 'Y' or 'n' (without the single quotes):");
                     logkeep = getchar();

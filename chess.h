@@ -47,6 +47,6 @@
     int moveKing(int x1, int y1, int x2, int y2);
     int moveKnight(int x1, int y1, int x2, int y2);
     int movePiece(int x1, int y1, int x2, int y2);
-    int rebuildBoard(const char * path, char* turn, int* tCounter);
+    int rebuildBoard(const char* path, char* turn, int* tCounter);
     
 #endif
