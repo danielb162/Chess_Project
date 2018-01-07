@@ -408,14 +408,15 @@ int rebuildBoard(const char* path, char* turn, int* tCounter) {
     int y2;
     FILE* fPtr = fopen(path, "rt");
     if ( fPtr == NULL ) {
-        puts("Something went wrong, I'm sorry you'll have to start a new game");
+        puts("Something went wrong, the move log file could not be read");
         return -1;
     }
     else {
         char symbol = '\0';
         // SIMZ LOOK HERE: For some reason "There is no piece on that tile" is printed once...
+        FILE* mh = fopen("move_history.txt", "at");
         do {
-            fscanf( fPtr, "%6s", command );
+            fgets( command, sizeof(command), fPtr );
             parseInput( command, &x1, &y1, &x2, &y2 );
             /* We'd like the move history of the previous game to continue into this one; Note
              * we don't need to wipe it because we only call this function after already wiping it.
@@ -423,13 +424,12 @@ int rebuildBoard(const char* path, char* turn, int* tCounter) {
             symbol = board[y1][x1].id;
             *turn = ( *tCounter % 2 == 0 ? B : W );
             movePiece( x1, y1, x2, y2 );
-            FILE* mh = fopen("move_history.txt", "at");
             fprintf(mh, "%d. %c%c(%c%c) to %c%c,\n", *tCounter,
                     ( x1 + 'A' ), ( y1 + '1' ), *turn, symbol,
                     ( x2 + 'A' ), ( y2 + '1' ));
-            fclose(mh);
             *tCounter = *tCounter + 1;
         } while ( !feof(fPtr) );
+        fclose(mh);
     }
     puts("Your game is rebuilt!");
     fclose(fPtr);
@@ -446,7 +446,7 @@ int main(void) {
     int choice = -1;
 
     // Char used to keep or discard the logfile (different from move_history.txt):
-    char logkeep = '\0';
+    char logKeep= '\0';
 
     // Bool to escape while loop later
     bool play = true;
@@ -490,6 +490,7 @@ int main(void) {
         logChoice = getchar();
         while ( logChoice != 'Y' && logChoice != 'n' ) {
             puts("Please input either 'Y' or 'n' (without the single quotes):");
+            while ( logChoice != '\n' && logChoice != '\0' ) logChoice = getchar();
             logChoice = getchar();
         }
         if ( logChoice == 'Y') rebuildBoard("move_log.txt", &turn, &tCounter);
@@ -574,13 +575,14 @@ int main(void) {
                 /* We do an extra getchar here to remove the newline left in stdin from
                  * scanf'ing an int (when we used scanf to get a value for choice)
                  * Also cover the case of user inputting nothing */
-                logkeep = getchar();
-                while ( logkeep == '\n' ) {
-                    logkeep = getchar();
+                logKeep = getchar();
+                while ( logKeep == '\n' ) {
+                    logKeep = getchar();
                 }
-                while ( logkeep != 'Y' && logkeep != 'n' ) {
+                while ( logKeep != 'Y' && logKeep != 'n' ) {
                     puts("Please input either 'Y' or 'n' (without the single quotes):");
-                    logkeep = getchar();
+                    while ( logKeep != '\n' && logKeep != '\0' ) logKeep = getchar();
+                    logKeep = getchar();
                 }
                 puts("");
 
@@ -615,7 +617,7 @@ int main(void) {
     }
 
     // If player doesn't want to keep the log file, we delete it:
-    if ( logkeep == 'n' ) system("rm -f move_log.txt");
+    if ( logKeep == 'n' ) system("rm -f move_log.txt");
 
     // No errors encountered
     return EXIT_SUCCESS;

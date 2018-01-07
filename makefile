@@ -1,5 +1,5 @@
 .PHONY: all
-all: chess.c chess.h pieceRules.c
+all: chess.c chess.h
 	gcc -pedantic -Wall -std=c99 -Wno-unused-variable -o chess $< -lm
 
 .PHONY: backup
