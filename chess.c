@@ -447,7 +447,7 @@ int main(void) {
     int choice = -1;
 
     // Char used to keep or discard the logfile (different from move_history.txt):
-    char logKeep= '\0';
+    char logKeep = '\0';
 
     // Bool to escape while loop later
     bool play = true;
