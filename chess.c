@@ -170,18 +170,19 @@ void parseInput(char* pre, int* num1, int* num2, int* num3, int* num4) {
 
             //  Without capture a Pawn can only move (progressively) within its own file:
             if ( x1 == x2 && board[y2][x2].id == ' ') {
+                //  Check if the pawn can promote itself:
                 pawnPromote(x1, y1);
+                //  After checking, successfully move the Pawn:
                 moveSuccess(x1, y1, x2, y2);
             }
             //  Check if capture is possible and capture if so:
             else if ( (x2 == (x1 + 1) || x2 == (x1 - 1) ) ) {
                 if ( canCapture(x1, y1, x2, y2) ) {
-                    //  Check if the pawn can promote itself:
                     pawnPromote(x1, y1);
-                    //  After checking, successfully move the Pawn:
                     moveSuccess(x1, y1, x2, y2);
                 }
-                else return -1;
+                //  Error code if move was invalid due to attempting to capture own piece
+                else return -2;
             }
             else return -1;
 
@@ -205,12 +206,12 @@ void parseInput(char* pre, int* num1, int* num2, int* num3, int* num4) {
                         int j = y1 + 1;
                         int i = x1 + 1;
                         for ( ; i < x2 && j < y2 ; i++, j++ ) {
-                            if ( board[j][i].id != ' ' ) return -1;
+                            if ( board[j][i].id != ' ' ) return -4;
                         }
                         //  Complete succes if next guard is passed:
                         if ( board[y2][x2].id == ' ' ||
                             canCapture(x1, y1, x2, y2) ) moveSuccess(x1, y1, x2, y2);
-                        else return -1;
+                        else return -2;
                     }
                     else return -1;
                 }
@@ -221,11 +222,11 @@ void parseInput(char* pre, int* num1, int* num2, int* num3, int* num4) {
                         int j = y1 - 1;
                         int i = x1 + 1;
                         for ( ; i < x2 && j > y2 ; i++, j-- ) {
-                            if ( board[j][i].id != ' ' ) return -1;
+                            if ( board[j][i].id != ' ' ) return -4;
                         }
                         if ( board[y2][x2].id == ' ' ||
                             canCapture(x1, y1, x2, y2) ) moveSuccess(x1, y1, x2, y2);
-                        else return -1;
+                        else return -2;
                     }
                     else return -1;
                 }
@@ -238,11 +239,11 @@ void parseInput(char* pre, int* num1, int* num2, int* num3, int* num4) {
                         int j = y1 + 1;
                         int i = x1 - 1;
                         for ( ; i > x2 && j < y2 ; i--, j++ ) {
-                            if ( board[j][i].id != ' ' ) return -1;
+                            if ( board[j][i].id != ' ' ) return -4;
                         }
                         if ( board[y2][x2].id == ' ' ||
                             canCapture(x1, y1, x2, y2) ) moveSuccess(x1, y1, x2, y2);
-                        else return -1;
+                        else return -2;
                     }
                     else return -1;
                 }
@@ -253,11 +254,11 @@ void parseInput(char* pre, int* num1, int* num2, int* num3, int* num4) {
                         int j = y1 - 1;
                         int i = x1 - 1;
                         for ( ; i > x2 && j > y2 ; i--, j-- ) {
-                            if ( board[j][i].id != ' ' ) return -1;
+                            if ( board[j][i].id != ' ' ) return -4;
                         }
                         if ( board[y2][x2].id == ' ' ||
                             canCapture(x1, y1, x2, y2) ) moveSuccess(x1, y1, x2, y2);
-                        else return -1;
+                        else return -2;
                     }
                     else return -1;
                 }
@@ -278,36 +279,36 @@ void parseInput(char* pre, int* num1, int* num2, int* num3, int* num4) {
                 if ( y2 > y1 ) {
                     int j = y1 + 1;
                     for ( ; j < y2 ; j++ ) {
-                        if ( board[j][x1].id != ' ' ) return -1;
+                        if ( board[j][x1].id != ' ' ) return -4;
                     }
                 }
                 else {
                     int j = y1 - 1;
                     for ( ; j > y2 ; j-- ) {
-                        if ( board[j][x1].id != ' ' ) return -1;
+                        if ( board[j][x1].id != ' ' ) return -4;
                     }
                 }
                 if ( board[y2][x2].id == ' ' ||
                     canCapture(x1, y1, x2, y2) ) moveSuccess(x1, y1, x2, y2);
-                else return -1;
+                else return -2;
             }
             //  Rook is moving horizontally
             else {
                 if ( x2 > x1 ) {
                     int i = x1 + 1;
                     for ( ; i < x2 ; i++ ) {
-                        if ( board[y1][i].id != ' ' ) return -1;
+                        if ( board[y1][i].id != ' ' ) return -4;
                     }
                 }
                 else {
                     int i = x1 - 1;
                     for ( ; i > x2 ; i-- ) {
-                        if ( board[y1][i].id != ' ' ) return -1;
+                        if ( board[y1][i].id != ' ' ) return -4;
                     }
                 }
                 if ( board[y2][x2].id == ' ' ||
                     canCapture(x1, y1, x2, y2) ) moveSuccess(x1, y1, x2, y2);
-                else return -1;
+                else return -2;
             }
 
             //  No errors were found while the move was processed
@@ -333,7 +334,7 @@ void parseInput(char* pre, int* num1, int* num2, int* num3, int* num4) {
             if ( move == sqrt(2) || move == 1 ) {
                 if ( board[y2][x2].id == ' ' ||
                     canCapture(x1, y1, x2, y2) ) moveSuccess(x1, y1, x2, y2);
-                else return -1;
+                else return -2;
             }
             else return -1;
 
@@ -352,7 +353,7 @@ void parseInput(char* pre, int* num1, int* num2, int* num3, int* num4) {
                  ( xDistSq == 4 && yDistSq == 1 ) ) {
                 if ( board[y2][x2].id == ' ' ||
                      canCapture(x1, y1, x2, y2) ) moveSuccess(x1, y1, x2, y2);
-                else return -1;
+                else return -2;
             }
             else return -1;
 
@@ -365,54 +366,95 @@ void parseInput(char* pre, int* num1, int* num2, int* num3, int* num4) {
         int movePiece(int x1, int y1, int x2, int y2) {
             //  Check if destination is invalid (due to the board's dimensions):
             if ( ( y2 >= 8 || x2 >= 8 || y2 < 0 || x2 < 0 ) ||
-                ( x1 == x2 && y1 == y2 ) ) return -1;
+                ( x1 == x2 && y1 == y2 ) ) {
+                printf("What you have entered is %soutside of the board%s, please try again!\n\n", ULN, NULN);
+                return -5;
+            }
             //  Check if source is invalid:
             else if ( board[y1][x1].id == ' ' ) {
-                puts("There is no piece on that tile.");
-                return -1;
+                printf("There is %sno piece on that tile%s, please try again!\n\n", ULN, NULN);
+                return -3;
             }
+
+            int errCode;
             
             /*  We now check what the piece's id is and pass it the
              *  coordinates along to the appropriate function */
             if ( board[y1][x1].id == 'P') {
                 //  Success:
-                if ( movePawn(x1, y1, x2, y2) == 0 ) return 0;
+                if ( ( errCode = movePawn(x1, y1, x2, y2) ) == 0 ) return 0;
                 //  Failure:
+                else if ( errCode == -2 ) {
+                    printf("You cannot capture your %sown piece%s, please try again!\n\n", ULN, NULN);
+                    return -2;
+                }
                 else return -1;
             }
             else if ( board[y1][x1].id == 'R') {
                 //  Success:
-                if ( moveRook(x1, y1, x2, y2) == 0 ) return 0;
+                if ( ( errCode = moveRook(x1, y1, x2, y2) ) == 0 ) return 0;
                 //  Failure:
+                else if ( errCode == -2 ) {
+                    printf("You cannot capture your %sown piece%s, please try again!\n\n", ULN, NULN);
+                    return -2;
+                }
+                else if (errCode == -4) {
+                    printf("There is a %spiece in the way%s, please try again!\n\n", ULN, NULN);
+                    return -4;
+                }
                 else return -1;
             }
             else if ( board[y1][x1].id == 'B') {
                 //  Success:
-                if ( moveBishop(x1, y1, x2, y2) == 0 ) return 0;
+                if ( ( errCode = moveBishop(x1, y1, x2, y2) ) == 0 ) return 0;
                 //  Failure:
+                else if ( errCode == -2 ) {
+                    printf("You cannot capture your %sown piece%s, please try again!\n\n", ULN, NULN);
+                    return -2;
+                }
+                else if (errCode == -4) {
+                    printf("There is a %spiece in the way%s, please try again!\n\n", ULN, NULN);
+                    return -4;
+                }
                 else return -1;
             }
             else if ( board[y1][x1].id == 'Q') {
                 //  Success:
-                if ( moveQueen(x1, y1, x2, y2) == 0 ) return 0;
+                if ( ( errCode = moveQueen(x1, y1, x2, y2) ) == 0 ) return 0;
                 //  Failure:
+                else if ( errCode == -2 ) {
+                    printf("You cannot capture your %sown piece%s, please try again!\n\n", ULN, NULN);
+                    return -2;
+                }
+                else if (errCode == -4) {
+                    printf("There is a %spiece in the way%s, please try again!\n\n", ULN, NULN);
+                    return -4;
+                }
                 else return -1;
             }
             else if ( board[y1][x1].id == 'K') {
                 //  Success:
-                if ( moveKing(x1, y1, x2, y2) == 0 ) return 0;
+                if ( ( errCode = moveKing(x1, y1, x2, y2) ) == 0 ) return 0;
                 //  Failure:
+                else if ( errCode == -2 ) {
+                    printf("You cannot capture your %sown piece%s, please try again!\n\n", ULN, NULN);
+                    return -2;
+                }
                 else return -1;
             }
             else if ( board[y1][x1].id == 'N') {
                 //  Success:
-                if ( moveKnight(x1, y1, x2, y2) == 0 ) return 0;
+                if ( ( errCode = moveKnight(x1, y1, x2, y2) ) == 0 ) return 0;
                 //  Failure:
+                else if ( errCode == -2 ) {
+                    printf("You cannot capture your %sown piece%s, please try again!\n\n", ULN, NULN);
+                    return -2;
+                }
                 else return -1;
             }
 
-            /*  This should never be reached but to account for
-             *  a bug or other strange occurence: */
+            /*  This should never be reached but to account for a bug
+             *  or other strange occurence: */
             else {
                 puts("Something strange happened with that piece's id");
                 return -1;
@@ -534,7 +576,7 @@ int main(void) {
     //  Game's loop
     while ( play ) {
         printBoard();
-        puts("\n\nPlease select one of the following options:");
+        puts("\n\nPlease type a number corresponding to one of the following options:");
         puts("\t1. Print the board");
         puts("\t2. Make a move");
         puts("\t3. Concede");
@@ -561,6 +603,7 @@ int main(void) {
                 printf("It is %s's turn right now. ", ( turn == W ? "White" : "Black" ) );
                 do {
                     puts("Please enter a move & follow this format 'A5,B8':");
+                    puts("\tA valid move is from A-H (column/file) & 1-8 (row/rank)");
                     scanf("%5s", target);
                     do {
                         target[5] = getchar();
@@ -573,8 +616,18 @@ int main(void) {
                 //  To make sure pieces are only moved on their own turn:
                 if ( turn == board[y1][x1].color ) {
                     char symbol = board[y1][x1].id;
-                    if ( movePiece(x1, y1, x2, y2) == -1 )
-                        printf("There was a problem, please try again!\n\n");
+                    int errCode = 1;
+                    /*  Possible error codes from movePiece:
+                     *   -1 -> Move was invalid for some miscellaneous reason (too general for it's own code),
+                     *   -2 -> User tried to capture their own piece,
+                     *   -3 -> User input an empty tile as a source tile,
+                     *   -4 -> There was a piece in between the source and destination tiles,
+                     *             (Note, this applies only to Bishop, Rook and Queen)
+                     *   -5 -> User tried to move outside the bounds of the board */
+                    
+                    if ( ( errCode = movePiece(x1, y1, x2, y2) ) != 0 ) {
+                        if ( errCode == -1) puts("Your move is invalid, please try again!\n");
+                    }
                     else {
                         //  Record move made with a file pointer in append-mode:
                         FILE* mh = fopen("move_history.txt", "at");
@@ -599,7 +652,7 @@ int main(void) {
 
             //  User wants to exit:
             case 3 :
-                puts("Game over! Board state:");
+                printf("Game over, %s won!\n", ( turn == W ? "White" : "Black" ) );
                 printBoard();
                 puts("");
                 play = false;
@@ -644,7 +697,7 @@ int main(void) {
             
             //  If for some reason even the input check fails
             default :
-                puts("Something went wrong...");
+                puts("Something went wrong with input checking...");
                 exit(-1);
         }
         puts("\n--------------------------------------------------------------------------------\n");

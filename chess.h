@@ -17,13 +17,15 @@
         char color;
     } Cell;
 
-    // Escape codes for colors, in-terminal
+    // Escape codes for in-terminal text printing
     static const char* LGR = "\033[0;37m"; //  Standard terminal color
     static const char* WHT = "\033[1;37m"; //  Color of the 'lines'/tile seperators
     static const char* YLW = "\033[1;33m"; //  Acts as black for color reasons
     static const char* LGN = "\033[1;32m"; //  Acts as white for color reasons
+    static const char* ULN = "\033[4m";    //  Changes text to be underlined
+    static const char* NULN = "\033[24m";  //  Changes text to not be underlined
 
-    // Maybe use char constants for black and white piece char instead
+    // Char constants for the id field of the Cell struct
     static const char B = 'B';
     static const char W = 'W';
 
