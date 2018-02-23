@@ -515,8 +515,10 @@ int rebuildBoard(const char* path, char* turn, int* tCounter) {
 
 int main(void) {
 
-    //  Setting up an empty board:
+    //  Setting up an empty board and explaining color difference to user
     initializeBoard();
+    printf("To be able to discern our pieces from the terminal's background color, we've taken some liberties with color representation: ");
+    puts("White is represented by light-green pieces while Black is represented by yellow pieces.\n");
 
     //  Integer to store the menu of options
     int choice = -1;
@@ -555,10 +557,10 @@ int main(void) {
 
     //  Offer to recreate/resume previous game from existing log-file:
     FILE* check = fopen("move_log.txt", "rt");
-    if ( !check ) puts("There is no previous logfile available, enjoy your game and good luck!");
+    if ( !check ) puts("There is no previous save file available, enjoy your game and good luck!");
     else {
         char logChoice = '\0';
-        puts("Log file is not empty, would you like to rebuild from a previous game? Y/n");
+        puts("A save file exists, would you like to rebuild from a previous game? Y/n");
         logChoice = getchar();
         /*  We felt it would be useful to have a user enter a capital 'Y' or a lowecase 'n'
          *  to further distinguish the two as the possible consequence of an error on the user's
@@ -652,7 +654,7 @@ int main(void) {
                 puts("");
                 play = false;
 
-                puts("Would you like to keep the log-file? 'Y' or 'n'");
+                puts("Would you like to save this game? 'Y' or 'n'");
                 /*  We do an extra getchar here to remove the newline left in stdin from
                  *  scanf'ing an int (when we used scanf to get a value for choice) as
                  *  well as accounting for the possibility that of user doesn't input anything */
