@@ -577,29 +577,24 @@ int main(void) {
     while ( play ) {
         printBoard();
         puts("\n\nPlease type a number corresponding to one of the following options:");
-        puts("\t1. Print the board");
-        puts("\t2. Make a move");
-        puts("\t3. Concede");
-        puts("\t4. See move history");
+        puts("\t1. Make a move");
+        puts("\t2. Concede");
+        puts("\t3. See move history");
 
         //  Take in user input:
         while ( scanf("%d", &choice) != 1 || choice < 1 || choice > 4 ) {
             do {
                 choice = getchar();
             } while (choice != '\n' && choice != EOF);
-            puts("Please input choice 1, 2, 3, 4 or 5.");
+            puts("Please input choice 1, 2 or 3.");
         }
         puts("");
 
         //  Switch statements so we can act based on the user's input
         switch ( choice ) {
-            //  User wants the board state to be printed:
-            case 1 :
-                printBoard();
-                break;
 
             //  User wants to move a piece:
-            case 2 :
+            case 1 :
                 printf("It is %s's turn right now. ", ( turn == W ? "White" : "Black" ) );
                 do {
                     puts("Please enter a move & follow this format 'A5,B8':");
@@ -651,7 +646,7 @@ int main(void) {
                 break;
 
             //  User wants to exit:
-            case 3 :
+            case 2 :
                 printf("Game over, %s won!\n", ( turn == W ? "White" : "Black" ) );
                 printBoard();
                 puts("");
@@ -675,7 +670,7 @@ int main(void) {
                 break;
 
             //  Want to print/see move history of the game
-            case 4 :
+            case 3 :
             {
                 //  Open a FILE ptr to read & print move history:
                 FILE* rp = fopen("move_history.txt", "rt");
